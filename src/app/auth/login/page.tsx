@@ -7,9 +7,16 @@ import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/services/auth.service';
 import Link from 'next/link';
+import { useAuth } from '@/providers/AuthProvider';
+import { AxiosError } from 'axios';
+
+interface ErrorResponse {
+  message: string;
+}
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
 
   const loginMutation = useMutation({
@@ -17,13 +24,13 @@ export default function LoginPage() {
     onSuccess: (data) => {
       if (data?.success) {
         toast.success(data.message || 'Logged in successfully!');
+        setUser(data.data.user);
         router.push(`/dashboard/${data.data.user.role.toLowerCase()}`);
-        setTimeout(() => window.location.reload(), 500);
       } else {
         toast.error(data.message || 'Login failed!');
       }
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error?.response?.data?.message || 'Something went wrong!');
     },
   });
@@ -61,7 +68,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
-          Don't have an account? <Link href="/auth/register" className="text-orange-600 font-semibold">Register</Link>
+          Don&apos;t have an account? <Link href="/auth/register" className="text-orange-600 font-semibold">Register</Link>
         </p>
       </div>
     </div>

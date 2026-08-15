@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { registerUser } from '@/services/auth.service';
 import Link from 'next/link';
+import { AxiosError } from 'axios';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function RegisterPage() {
         toast.error(data.message || 'Registration failed!');
       }
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{message: string}>) => {
       toast.error(error?.response?.data?.message || 'Something went wrong!');
     },
   });

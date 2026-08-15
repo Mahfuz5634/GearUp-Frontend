@@ -1,15 +1,14 @@
 import axiosInstance from "@/lib/axiosInstance";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { User, LoginResponse, RegisterResponse } from "@/types";
 
-
-
-export const registerUser = async(userData:any)=>{
+export const registerUser = async (userData: Record<string, unknown>): Promise<RegisterResponse> => {
     const {data} = await axiosInstance.post('auth/register',userData);
     return data;
 }
 
-export const loginUser = async (credentials: any) => {
+export const loginUser = async (credentials: Record<string, unknown>): Promise<LoginResponse> => {
   const { data } = await axiosInstance.post('/auth/login', credentials);
   if (data?.success) {
     Cookies.set('accessToken', data.data.accessToken, { expires: 30 });
@@ -21,11 +20,11 @@ export const logoutUser =()=>{
   Cookies.remove('accessToken');
 }
 
-export const getCurrentUser = () => {
+export const getCurrentUser = (): User | null => {
     const token = Cookies.get('accessToken');
     if (token) {
       try {
-        const decodedToken: any = jwtDecode(token);
+        const decodedToken = jwtDecode<User>(token);
         return decodedToken;
       } catch (error) {
         console.error('Error decoding token:', error);

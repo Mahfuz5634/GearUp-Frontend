@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getAllGears } from '@/services/gear.service';
+import { Gear } from '@/types';
 
 export default function GearPage() {
   const { data: gears, isLoading, isError } = useQuery({
@@ -21,7 +22,7 @@ export default function GearPage() {
       
       {/* Gear Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {gears?.map((gear: any) => (
+        {gears?.map((gear: Gear) => (
           <div key={gear.id} className="border rounded-lg shadow-sm hover:shadow-md transition bg-white overflow-hidden flex flex-col">
             <div className="relative w-full h-48 bg-slate-100">
               <Image 

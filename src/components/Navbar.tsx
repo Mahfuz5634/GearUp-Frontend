@@ -2,23 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { getCurrentUser, logoutUser } from '@/services/auth.service';
-
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-
-
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-  }, []);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logoutUser();
-    setUser(null);
+    logout();
     router.push('/auth/login');
   };
 

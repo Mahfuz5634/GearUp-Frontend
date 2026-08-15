@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const roleBasedRoutes = {
-  CUSTOMER: ['/dashboard/customer', '/payment'],
-  PROVIDER: ['/dashboard/provider'],
-  ADMIN: ['/dashboard/admin'],
-};
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -20,11 +14,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(); 
   }
 
-  let decodedData: any = null;
+  let decodedData: { role?: string } | null = null;
   try {
     const payload = accessToken.split('.')[1];
-    decodedData = JSON.parse(atob(payload));
-  } catch (error) {
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    decodedData = JSON.parse(atob(base64));
+  } catch {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
@@ -38,7 +33,10 @@ export function middleware(request: NextRequest) {
 
 
   if (pathname === '/auth/login' || pathname === '/auth/register') {
-    return NextResponse.redirect(new URL(`/dashboard/${role.toLowerCase()}`, request.url));
+    if (role) {
+      return NextResponse.redirect(new URL(`/dashboard/${role.toLowerCase()}`, request.url));
+    }
+    return NextResponse.next();
   }
 
   if (pathname.startsWith('/dashboard')) {
