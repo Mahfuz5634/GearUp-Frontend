@@ -7,7 +7,7 @@ import { getProviderOrders, updateOrderStatus } from '@/services/provider.servic
 import { Loader } from '@/components/ui/Loader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { ShoppingCart, Calendar, User, CheckCircle, Package } from 'lucide-react';
+import { ShoppingCart, Calendar, User, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ProviderOrdersPage() {

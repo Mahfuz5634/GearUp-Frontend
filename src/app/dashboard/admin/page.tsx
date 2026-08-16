@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
 
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { getAllUsers, getAllRentals, getAllGearsAdmin } from '@/services/admin.service';
@@ -26,6 +27,9 @@ export default function AdminDashboard() {
     queryFn: getAllGearsAdmin,
   });
 
+  // eslint-disable-next-line react-hooks/purity
+  const oneWeekAgo = React.useMemo(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), []);
+
   const isLoading = isLoadingUsers || isLoadingRentals || isLoadingGears;
 
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
@@ -35,7 +39,7 @@ export default function AdminDashboard() {
     .reduce((acc: number, r: any) => acc + (r.payment?.amount || 0), 0) || 0;
 
   const activeRentals = rentals?.filter((r: any) => r.status === 'PICKED_UP').length || 0;
-  const newUsers = users?.filter((u: any) => new Date(u.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length || 0;
+  const newUsers = users?.filter((u: any) => new Date(u.createdAt) > oneWeekAgo).length || 0;
 
   return (
     <div className="bg-zinc-50 min-h-screen py-12">
