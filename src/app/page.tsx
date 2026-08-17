@@ -2,6 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade, Pagination } from "swiper/modules";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Compass, ShieldCheck, Zap } from "lucide-react";
 import { getAllGears } from "@/services/gear.service";
@@ -9,6 +11,39 @@ import { Gear } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui/Loader";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
+
+const HERO_SLIDES = [
+  {
+    badge: "Outdoor gear · rented on demand",
+    title: "Rent Sports & Outdoor Gear Instantly",
+    subtitle:
+      "From mountain bikes to camping tents, get the gear you need for your next adventure without the commitment of buying.",
+    image:
+      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=2070&auto=format&fit=crop",
+    primary: { label: "Browse Gear", href: "/gear" },
+    secondary: { label: "Become a Provider", href: "/auth/register" },
+  },
+  {
+    badge: "Sleep under the stars",
+    title: "Gear Up for Camping Season",
+    subtitle:
+      "Tents, stoves, lanterns and more — everything you need for a weekend in the wild, ready when you are.",
+    image:
+      "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=2070&auto=format&fit=crop",
+    primary: { label: "Browse Camping", href: "/gear?category=Camping" },
+    secondary: { label: "Explore All Gear", href: "/gear" },
+  },
+  {
+    badge: "Make a splash this weekend",
+    title: "Hit the Water This Weekend",
+    subtitle:
+      "Kayaks, paddle boards and wake gear from verified local providers — zero storage, zero hassle.",
+    image:
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070&auto=format&fit=crop",
+    primary: { label: "Explore Water Sports", href: "/gear?category=Water+Sports" },
+    secondary: { label: "Browse All Gear", href: "/gear" },
+  },
+];
 
 export default function Home() {
   const { data: gears, isLoading } = useQuery<Gear[]>({
@@ -20,34 +55,54 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-ink text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 topo" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-44 flex flex-col items-center text-center">
-          <span className="animate-rise inline-flex items-center gap-2 text-trail font-bold text-xs uppercase tracking-[0.25em] mb-8">
-            <span className="w-2 h-2 rounded-full bg-trail animate-pulse" />
-            Outdoor gear · rented on demand
-          </span>
-          <h1 className="animate-rise delay-1 font-display text-5xl md:text-7xl tracking-tight leading-[1.05] mb-8 max-w-4xl">
-            Rent Sports & Outdoor Gear Instantly
-          </h1>
-          <p className="animate-rise delay-2 text-xl md:text-2xl text-zinc-300 max-w-3xl mb-12">
-            From mountain bikes to camping tents, get the gear you need for your next adventure without the commitment of buying.
-          </p>
-          <div className="animate-rise delay-3 flex flex-col sm:flex-row gap-4">
-            <Link href="/gear">
-              <Button size="lg" className="w-full sm:w-auto bg-trail text-white hover:bg-trail-dark shadow-lg shadow-trail/30">
-                Browse Gear <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 hover:text-white hover:border-white">
-                Become a Provider
-              </Button>
-            </Link>
-          </div>
-        </div>
+        <Swiper
+          className="hero-swiper h-[560px] md:h-[640px] lg:h-[720px]"
+          modules={[Autoplay, EffectFade, Pagination]}
+          effect="fade"
+          fadeEffect={{ crossFade: true }}
+          speed={900}
+          loop
+          autoplay={{ delay: 6000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+        >
+          {HERO_SLIDES.map((slide, i) => (
+            <SwiperSlide key={i}>
+              <div className="relative h-full bg-ink">
+                <div
+                  className="absolute inset-0 z-0 opacity-20 bg-cover bg-center"
+                  style={{ backgroundImage: `url('${slide.image}')` }}
+                />
+                <div className="absolute inset-0 z-0 opacity-20">
+                  <div className="absolute inset-0 topo" />
+                </div>
+                <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
+                  <span className="animate-rise inline-flex items-center gap-2 text-trail font-bold text-xs uppercase tracking-[0.25em] mb-8">
+                    <span className="w-2 h-2 rounded-full bg-trail animate-pulse" />
+                    {slide.badge}
+                  </span>
+                  <h1 className="animate-rise delay-1 font-display text-5xl md:text-7xl tracking-tight leading-[1.05] mb-8 max-w-4xl">
+                    {slide.title}
+                  </h1>
+                  <p className="animate-rise delay-2 text-xl md:text-2xl text-zinc-300 max-w-3xl mb-12">
+                    {slide.subtitle}
+                  </p>
+                  <div className="animate-rise delay-3 flex flex-col sm:flex-row gap-4">
+                    <Link href={slide.primary.href}>
+                      <Button size="lg" className="w-full sm:w-auto bg-trail text-white hover:bg-trail-dark shadow-lg shadow-trail/30">
+                        {slide.primary.label} <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <Link href={slide.secondary.href}>
+                      <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 hover:text-white hover:border-white">
+                        {slide.secondary.label}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </section>
 
       {/* Features Section */}
