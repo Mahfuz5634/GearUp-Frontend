@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f2ea;
+  --foreground: #1c1917;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: #f5f2ea;
+  --color-card: #fffdf8;
+  --color-ink: #1c1917;
+  --color-ink-soft: #57534e;
+  --color-trail: #f97316;
+  --color-trail-dark: #ea580c;
+  --color-moss: #4d5a3a;
+  --color-line: #e7e2d8;
+  --font-display: var(--font-display-family);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f5f2ea; /* Force light mode for now to keep design consistent */
+    --foreground: #1c1917;
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/80 backdrop-blur-md border-b border-line shadow-sm;
+  }
+  .topo {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%231c1917' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M0 32 Q 16 16 32 32 T 64 32 T 96 32 T 128 32 T 160 32'/%3E%3Cpath d='M0 64 Q 16 48 32 64 T 64 64 T 96 64 T 128 64 T 160 64'/%3E%3Cpath d='M0 96 Q 16 80 32 96 T 64 96 T 96 96 T 128 96 T 160 96'/%3E%3Cpath d='M0 128 Q 16 112 32 128 T 64 128 T 96 128 T 128 128 T 160 128'/%3E%3Cpath d='M32 0 Q 16 16 32 32 T 32 64 T 32 96 T 32 128 T 32 160'/%3E%3Cpath d='M64 0 Q 48 16 64 32 T 64 64 T 64 96 T 64 128 T 64 160'/%3E%3Cpath d='M96 0 Q 80 16 96 32 T 96 64 T 96 96 T 96 128 T 96 160'/%3E%3Cpath d='M128 0 Q 112 16 128 32 T 128 64 T 128 96 T 128 128 T 128 160'/%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-rise {
+    animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .delay-1 {
+    animation-delay: 0.08s;
+  }
+  .delay-2 {
+    animation-delay: 0.16s;
+  }
+  .delay-3 {
+    animation-delay: 0.24s;
+  }
+  .delay-4 {
+    animation-delay: 0.32s;
+  }
+  .delay-5 {
+    animation-delay: 0.4s;
+  }
+  .delay-6 {
+    animation-delay: 0.48s;
+  }
 }

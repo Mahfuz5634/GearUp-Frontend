@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllUsers, updateUserStatus } from '@/services/admin.service';
@@ -49,34 +48,34 @@ export default function AdminUsersPage() {
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">User Management</h1>
-            <p className="text-zinc-500">View and manage all registered users on the platform.</p>
+            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">User Management</h1>
+            <p className="text-ink-soft">View and manage all registered users on the platform.</p>
           </div>
           
           <div className="relative w-full md:w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-zinc-400" />
+              <Search size={16} className="text-ink-soft" />
             </div>
             <input
               type="text"
               placeholder="Search users..."
-              className="w-full pl-10 pr-4 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-zinc-900 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
-                <tr className="bg-zinc-50 text-zinc-500 text-xs uppercase tracking-wider font-semibold border-b border-zinc-200">
+                <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
                   <th className="p-6">User</th>
                   <th className="p-6">Role</th>
                   <th className="p-6">Status</th>
@@ -84,19 +83,19 @@ export default function AdminUsersPage() {
                   <th className="p-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y divide-line">
                 {filteredUsers?.map((user: any) => (
-                  <tr key={user.id} className="hover:bg-zinc-50 transition-colors">
+                  <tr key={user.id} className="hover:bg-line/50 transition-colors">
                     <td className="p-6">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                          user.role === 'ADMIN' ? 'bg-red-500' : user.role === 'PROVIDER' ? 'bg-blue-500' : 'bg-zinc-800'
+                          user.role === 'ADMIN' ? 'bg-red-500' : user.role === 'PROVIDER' ? 'bg-blue-500' : 'bg-ink'
                         }`}>
                           {user.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-bold text-zinc-900">{user.name}</p>
-                          <p className="text-xs text-zinc-500">{user.email}</p>
+                          <p className="font-bold text-ink">{user.name}</p>
+                          <p className="text-xs text-ink-soft">{user.email}</p>
                         </div>
                       </div>
                     </td>
@@ -105,7 +104,7 @@ export default function AdminUsersPage() {
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
                         disabled={updateMutation.isPending || user.role === 'ADMIN'}
-                        className="p-1 border border-zinc-300 rounded text-sm bg-white outline-none disabled:opacity-50"
+                        className="p-1 border border-line rounded text-sm bg-card outline-none disabled:opacity-50"
                       >
                         <option value="CUSTOMER">Customer</option>
                         <option value="PROVIDER">Provider</option>
@@ -119,7 +118,7 @@ export default function AdminUsersPage() {
                         <Badge variant="danger">Blocked</Badge>
                       )}
                     </td>
-                    <td className="p-6 text-sm text-zinc-600">
+                    <td className="p-6 text-sm text-ink-soft">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-6 text-right">
@@ -134,7 +133,7 @@ export default function AdminUsersPage() {
                           {user.status === 'ACTIVE' ? 'Block User' : 'Unblock User'}
                         </Button>
                       ) : (
-                        <span className="text-xs text-zinc-400 italic flex items-center justify-end gap-1">
+                        <span className="text-xs text-ink-soft italic flex items-center justify-end gap-1">
                           <Shield size={12} /> Admin privileges
                         </span>
                       )}
@@ -147,11 +146,11 @@ export default function AdminUsersPage() {
           
           {filteredUsers?.length === 0 && (
             <div className="p-16 text-center flex flex-col items-center">
-              <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-6">
+              <div className="w-20 h-20 bg-line/60 rounded-full flex items-center justify-center text-ink-soft mb-6">
                 <Users size={32} />
               </div>
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">No users found</h3>
-              <p className="text-zinc-500">No users match your search criteria.</p>
+              <h3 className="text-xl font-bold text-ink mb-2">No users found</h3>
+              <p className="text-ink-soft">No users match your search criteria.</p>
             </div>
           )}
         </div>

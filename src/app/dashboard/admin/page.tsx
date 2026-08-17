@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -42,13 +41,13 @@ export default function AdminDashboard() {
   const newUsers = users?.filter((u: any) => new Date(u.createdAt) > oneWeekAgo).length || 0;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">Platform Overview</h1>
-            <p className="text-zinc-500">Monitor platform activity, users, and transactions.</p>
+            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Platform Overview</h1>
+            <p className="text-ink-soft">Monitor platform activity, users, and transactions.</p>
           </div>
           <div className="flex gap-4">
             <Link href="/dashboard/admin/users">
@@ -59,73 +58,73 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-50 text-trail-dark rounded-full flex items-center justify-center">
                 <TrendingUp size={24} />
               </div>
               <Badge variant="success" className="text-xs">+12%</Badge>
             </div>
-            <p className="text-sm text-zinc-500 font-medium">Platform Revenue</p>
-            <h3 className="text-2xl font-bold text-zinc-900">${totalRevenue}</h3>
+            <p className="text-sm text-ink-soft font-medium">Platform Revenue</p>
+            <h3 className="font-display text-2xl text-ink tracking-tight">${totalRevenue}</h3>
           </div>
           
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex justify-between items-start mb-4">
               <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
                 <ShoppingBag size={24} />
               </div>
             </div>
-            <p className="text-sm text-zinc-500 font-medium">Total Rentals</p>
-            <h3 className="text-2xl font-bold text-zinc-900">{rentals?.length || 0}</h3>
-            <p className="text-xs text-zinc-400 mt-1">{activeRentals} currently active</p>
+            <p className="text-sm text-ink-soft font-medium">Total Rentals</p>
+            <h3 className="font-display text-2xl text-ink tracking-tight">{rentals?.length || 0}</h3>
+            <p className="text-xs text-ink-soft mt-1">{activeRentals} currently active</p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-trail/10 text-trail-dark rounded-full flex items-center justify-center">
                 <Package size={24} />
               </div>
             </div>
-            <p className="text-sm text-zinc-500 font-medium">Listed Gear</p>
-            <h3 className="text-2xl font-bold text-zinc-900">{gears?.length || 0}</h3>
+            <p className="text-sm text-ink-soft font-medium">Listed Gear</p>
+            <h3 className="font-display text-2xl text-ink tracking-tight">{gears?.length || 0}</h3>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex justify-between items-start mb-4">
               <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
                 <Users size={24} />
               </div>
               <Badge variant="info" className="text-xs">+{newUsers} new</Badge>
             </div>
-            <p className="text-sm text-zinc-500 font-medium">Total Users</p>
-            <h3 className="text-2xl font-bold text-zinc-900">{users?.length || 0}</h3>
+            <p className="text-sm text-ink-soft font-medium">Total Users</p>
+            <h3 className="font-display text-2xl text-ink tracking-tight">{users?.length || 0}</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Users */}
-          <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-            <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-zinc-900">Recent Users</h2>
-              <Link href="/dashboard/admin/users" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+          <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+            <div className="p-6 border-b border-line flex justify-between items-center">
+              <h2 className="text-lg font-bold text-ink">Recent Users</h2>
+              <Link href="/dashboard/admin/users" className="text-sm text-trail-dark hover:underline flex items-center gap-1">
                 View all <ArrowRight size={14} />
               </Link>
             </div>
             <div className="p-0">
               {users && users.length > 0 ? (
-                <ul className="divide-y divide-zinc-100">
+                <ul className="divide-y divide-line">
                   {users.slice(0, 5).map((user: any) => (
-                    <li key={user.id} className="p-6 hover:bg-zinc-50 transition-colors flex justify-between items-center">
+                    <li key={user.id} className="p-6 hover:bg-line/50 transition-colors flex justify-between items-center">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                          user.role === 'ADMIN' ? 'bg-red-500' : user.role === 'PROVIDER' ? 'bg-blue-500' : 'bg-zinc-800'
+                          user.role === 'ADMIN' ? 'bg-red-500' : user.role === 'PROVIDER' ? 'bg-blue-500' : 'bg-ink'
                         }`}>
                           {user.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-semibold text-zinc-900 leading-tight">{user.name}</p>
-                          <p className="text-xs text-zinc-500">{user.email}</p>
+                          <p className="font-semibold text-ink leading-tight">{user.name}</p>
+                          <p className="text-xs text-ink-soft">{user.email}</p>
                         </div>
                       </div>
                       <Badge variant={user.role === 'ADMIN' ? 'danger' : user.role === 'PROVIDER' ? 'info' : 'default'}>
@@ -135,15 +134,15 @@ export default function AdminDashboard() {
                   ))}
                 </ul>
               ) : (
-                <div className="p-12 text-center text-zinc-500">No users found.</div>
+                <div className="p-12 text-center text-ink-soft">No users found.</div>
               )}
             </div>
           </div>
 
           {/* System Health */}
-          <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-            <div className="p-6 border-b border-zinc-100">
-              <h2 className="text-lg font-bold text-zinc-900">System Health</h2>
+          <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+            <div className="p-6 border-b border-line">
+              <h2 className="text-lg font-bold text-ink">System Health</h2>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-start gap-4">
@@ -151,8 +150,8 @@ export default function AdminDashboard() {
                   <CheckCircle size={20} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-zinc-900 text-sm">Database Connection</h4>
-                  <p className="text-sm text-zinc-500">PostgreSQL is running smoothly. Latency: 12ms</p>
+                  <h4 className="font-bold text-ink text-sm">Database Connection</h4>
+                  <p className="text-sm text-ink-soft">PostgreSQL is running smoothly. Latency: 12ms</p>
                 </div>
               </div>
               
@@ -161,8 +160,8 @@ export default function AdminDashboard() {
                   <CheckCircle size={20} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-zinc-900 text-sm">Payment Gateway (Stripe)</h4>
-                  <p className="text-sm text-zinc-500">API connection stable. No webhooks missed.</p>
+                  <h4 className="font-bold text-ink text-sm">Payment Gateway (Stripe)</h4>
+                  <p className="text-sm text-ink-soft">API connection stable. No webhooks missed.</p>
                 </div>
               </div>
               
@@ -171,8 +170,8 @@ export default function AdminDashboard() {
                   <ShieldAlert size={20} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-zinc-900 text-sm">Pending Moderation</h4>
-                  <p className="text-sm text-zinc-500">3 gear items flagged for review.</p>
+                  <h4 className="font-bold text-ink text-sm">Pending Moderation</h4>
+                  <p className="text-sm text-ink-soft">3 gear items flagged for review.</p>
                   <Button variant="outline" size="sm" className="mt-2">Review Items</Button>
                 </div>
               </div>

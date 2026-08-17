@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -31,13 +30,13 @@ export default function ProviderDashboard() {
   const pendingConfirmations = orders?.filter((o: any) => o.status === 'PLACED').length || 0;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">Provider Dashboard</h1>
-            <p className="text-zinc-500">Manage your inventory, fulfill orders, and track earnings.</p>
+            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Provider Dashboard</h1>
+            <p className="text-ink-soft">Manage your inventory, fulfill orders, and track earnings.</p>
           </div>
           <div className="flex gap-4">
             <Link href="/dashboard/provider/gear">
@@ -51,31 +50,31 @@ export default function ProviderDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-50 text-trail-dark rounded-full flex items-center justify-center">
                 <DollarSign size={24} />
               </div>
               <div>
-                <p className="text-sm text-zinc-500 font-medium">Total Earnings</p>
-                <h3 className="text-2xl font-bold text-zinc-900">${totalEarnings}</h3>
+                <p className="text-sm text-ink-soft font-medium">Total Earnings</p>
+                <h3 className="font-display text-2xl text-ink tracking-tight">${totalEarnings}</h3>
               </div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-trail/10 text-trail-dark rounded-full flex items-center justify-center">
                 <Activity size={24} />
               </div>
               <div>
-                <p className="text-sm text-zinc-500 font-medium">Active Rentals</p>
-                <h3 className="text-2xl font-bold text-zinc-900">{activeOrders}</h3>
+                <p className="text-sm text-ink-soft font-medium">Active Rentals</p>
+                <h3 className="font-display text-2xl text-ink tracking-tight">{activeOrders}</h3>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center relative">
                 <ShoppingCart size={24} />
@@ -84,20 +83,20 @@ export default function ProviderDashboard() {
                 )}
               </div>
               <div>
-                <p className="text-sm text-zinc-500 font-medium">Needs Attention</p>
-                <h3 className="text-2xl font-bold text-zinc-900">{pendingConfirmations}</h3>
+                <p className="text-sm text-ink-soft font-medium">Needs Attention</p>
+                <h3 className="font-display text-2xl text-ink tracking-tight">{pendingConfirmations}</h3>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="bg-card p-6 rounded-2xl shadow-sm border border-line">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
                 <Package size={24} />
               </div>
               <div>
-                <p className="text-sm text-zinc-500 font-medium">Listed Gear</p>
-                <h3 className="text-2xl font-bold text-zinc-900">{gears?.length || 0}</h3>
+                <p className="text-sm text-ink-soft font-medium">Listed Gear</p>
+                <h3 className="font-display text-2xl text-ink tracking-tight">{gears?.length || 0}</h3>
               </div>
             </div>
           </div>
@@ -105,21 +104,21 @@ export default function ProviderDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Orders Snippet */}
-          <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-            <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-zinc-900">Recent Orders</h2>
-              <Link href="/dashboard/provider/orders" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+          <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+            <div className="p-6 border-b border-line flex justify-between items-center">
+              <h2 className="text-lg font-bold text-ink">Recent Orders</h2>
+              <Link href="/dashboard/provider/orders" className="text-sm text-trail-dark hover:underline flex items-center gap-1">
                 View all <ArrowRight size={14} />
               </Link>
             </div>
             <div className="p-0">
               {orders && orders.length > 0 ? (
-                <ul className="divide-y divide-zinc-100">
+                <ul className="divide-y divide-line">
                   {orders.slice(0, 5).map((order: any) => (
-                    <li key={order.id} className="p-6 hover:bg-zinc-50 transition-colors flex justify-between items-center">
+                    <li key={order.id} className="p-6 hover:bg-line/50 transition-colors flex justify-between items-center">
                       <div>
-                        <p className="font-semibold text-zinc-900">{order.gear?.name}</p>
-                        <p className="text-sm text-zinc-500">Customer: {order.customer?.name}</p>
+                        <p className="font-semibold text-ink">{order.gear?.name}</p>
+                        <p className="text-sm text-ink-soft">Customer: {order.customer?.name}</p>
                       </div>
                       <Badge variant={order.status === 'PLACED' ? 'warning' : 'default'}>
                         {order.status}
@@ -128,18 +127,18 @@ export default function ProviderDashboard() {
                   ))}
                 </ul>
               ) : (
-                <div className="p-12 text-center text-zinc-500">No recent orders.</div>
+                <div className="p-12 text-center text-ink-soft">No recent orders.</div>
               )}
             </div>
           </div>
 
           {/* Setup Profile Snippet */}
-          <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col items-center justify-center p-12 text-center">
-            <div className="w-16 h-16 bg-zinc-100 text-zinc-400 rounded-full flex items-center justify-center mb-6">
+          <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="w-16 h-16 bg-line/60 text-ink-soft rounded-full flex items-center justify-center mb-6">
               <Settings size={32} />
             </div>
-            <h2 className="text-xl font-bold text-zinc-900 mb-2">Provider Settings</h2>
-            <p className="text-zinc-500 mb-6 max-w-sm">
+            <h2 className="text-xl font-bold text-ink mb-2">Provider Settings</h2>
+            <p className="text-ink-soft mb-6 max-w-sm">
               Update your payment information and payout settings to ensure you get paid on time.
             </p>
             <Button variant="outline">Manage Settings</Button>

@@ -3,14 +3,15 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { getSingleGear } from '@/services/gear.service';
 import { useAuth } from '@/providers/AuthProvider';
 import toast from 'react-hot-toast';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Calendar, ShieldCheck, Truck } from 'lucide-react';
+import { CategoryIcon } from '@/components/ui/CategoryIcon';
+import { Calendar, ShieldCheck, Truck, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function GearDetailsPage() {
   const params = useParams();
@@ -43,13 +44,12 @@ export default function GearDetailsPage() {
       toast.error('Please select both start and end dates.');
       return;
     }
-    
+
     if (new Date(startDate) > new Date(endDate)) {
       toast.error('End date cannot be before start date.');
       return;
     }
 
-    // Save dates in sessionStorage or pass via query params
     sessionStorage.setItem(`rental_dates_${gearId}`, JSON.stringify({ startDate, endDate }));
     router.push(`/dashboard/customer/checkout/${gearId}`);
   };
@@ -61,108 +61,122 @@ export default function GearDetailsPage() {
   const total = days * gear.price;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col lg:flex-row">
-          {/* Image Section */}
-          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-auto bg-zinc-100">
-             <Image 
-                src={`https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=1000&auto=format&fit=crop`} 
-                alt={gear.name}
-                fill
-                className="object-cover"
-                priority
-              />
+        <Link href="/gear" className="text-sm text-ink-soft hover:text-ink flex items-center gap-1 mb-6 w-fit font-medium">
+          <ArrowLeft size={16} /> Back to Gear
+        </Link>
+
+        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+          {/* Header */}
+          <div className="relative bg-ink text-white px-8 lg:px-12 py-10 overflow-hidden">
+            <div className="absolute inset-0 z-0 opacity-20">
+              <div className="absolute inset-0 topo" />
+            </div>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
+              <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-trail shrink-0">
+                <CategoryIcon name={gear.category?.name} size={32} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Badge variant="info">{gear.category?.name || 'Category'}</Badge>
+                  {gear.stock > 0 ? (
+                    <Badge variant="success">In Stock ({gear.stock})</Badge>
+                  ) : (
+                    <Badge variant="danger">Out of Stock</Badge>
+                  )}
+                </div>
+                <h1 className="font-display text-3xl lg:text-4xl tracking-tight mb-1">
+                  {gear.name}
+                </h1>
+                <p className="text-zinc-300 font-medium">by {gear.brand}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Details Section */}
-          <div className="p-8 lg:p-12 w-full lg:w-1/2 flex flex-col">
-            <div className="flex items-center gap-2 mb-4">
-              <Badge variant="info">{gear.category?.name || 'Category'}</Badge>
-              {gear.stock > 0 ? (
-                <Badge variant="success">In Stock ({gear.stock})</Badge>
-              ) : (
-                <Badge variant="danger">Out of Stock</Badge>
-              )}
-            </div>
-            
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-zinc-900 mb-2">
-              {gear.name}
-            </h1>
-            <p className="text-zinc-500 font-medium mb-6">by {gear.brand}</p>
-            
-            <div className="prose prose-zinc max-w-none mb-8 text-zinc-600">
-              <p>{gear.description}</p>
-            </div>
+          {/* Body */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 p-8 lg:p-12">
+            {/* Description */}
+            <div className="lg:col-span-3">
+              <p className="text-ink-soft leading-relaxed mb-8">{gear.description}</p>
 
-            <div className="grid grid-cols-2 gap-4 mb-8 py-6 border-y border-zinc-100">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="text-green-600" size={24} />
-                <div>
-                  <p className="text-sm font-semibold text-zinc-900">Verified Provider</p>
-                  <p className="text-xs text-zinc-500">{gear.provider?.name || 'GearUp Partner'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Truck className="text-blue-600" size={24} />
-                <div>
-                  <p className="text-sm font-semibold text-zinc-900">Local Pickup</p>
-                  <p className="text-xs text-zinc-500">Available instantly</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Rental Form */}
-            <div className="mt-auto bg-zinc-50 p-6 rounded-xl border border-zinc-200">
-              <div className="flex justify-between items-end mb-6">
-                <div>
-                  <p className="text-sm text-zinc-500 font-medium mb-1">Rental Price</p>
-                  <p className="text-3xl font-bold text-zinc-900">${gear.price} <span className="text-lg text-zinc-500 font-normal">/ day</span></p>
-                </div>
-                {days > 0 && (
-                  <div className="text-right">
-                    <p className="text-sm text-zinc-500 font-medium mb-1">Total ({days} days)</p>
-                    <p className="text-2xl font-bold text-zinc-900">${total}</p>
+              <div className="grid grid-cols-2 gap-4 py-6 border-y border-line mb-8">
+                <div className="flex items-center gap-3">
+                  <span className="w-10 h-10 rounded-xl bg-line/60 text-moss flex items-center justify-center">
+                    <ShieldCheck size={20} />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-ink">Verified Provider</p>
+                    <p className="text-xs text-ink-soft">{gear.provider?.name || 'GearUp Partner'}</p>
                   </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 mb-2 flex items-center gap-2">
-                    <Calendar size={16} /> Start Date
-                  </label>
-                  <input 
-                    type="date"
-                    min={getTodayString()}
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full p-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-zinc-900 outline-none"
-                  />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 mb-2 flex items-center gap-2">
-                    <Calendar size={16} /> End Date
-                  </label>
-                  <input 
-                    type="date"
-                    min={startDate || getTodayString()}
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full p-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-zinc-900 outline-none"
-                  />
+                <div className="flex items-center gap-3">
+                  <span className="w-10 h-10 rounded-xl bg-line/60 text-moss flex items-center justify-center">
+                    <Truck size={20} />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-ink">Local Pickup</p>
+                    <p className="text-xs text-ink-soft">Available instantly</p>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <Button
-                size="lg"
-                onClick={handleRentClick}
-                disabled={gear.stock <= 0}
-                className="w-full text-lg h-14"
-              >
-                {gear.stock > 0 ? 'Rent Now' : 'Currently Unavailable'}
-              </Button>
+            {/* Rental Form */}
+            <div className="lg:col-span-2">
+              <div className="bg-paper p-6 rounded-2xl border border-line sticky top-24">
+                <div className="flex justify-between items-end mb-6">
+                  <div>
+                    <p className="text-sm text-ink-soft font-medium mb-1">Rental Price</p>
+                    <p className="text-3xl font-display text-ink">
+                      <span className="text-trail-dark">${gear.price}</span>{' '}
+                      <span className="text-base text-ink-soft font-normal">/ day</span>
+                    </p>
+                  </div>
+                  {days > 0 && (
+                    <div className="text-right">
+                      <p className="text-sm text-ink-soft font-medium mb-1">Total ({days} days)</p>
+                      <p className="text-2xl font-display text-ink">${total}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-2 flex items-center gap-2">
+                      <Calendar size={16} className="text-trail-dark" /> Start Date
+                    </label>
+                    <input
+                      type="date"
+                      min={getTodayString()}
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full p-3 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none bg-card text-ink"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-2 flex items-center gap-2">
+                      <Calendar size={16} className="text-trail-dark" /> End Date
+                    </label>
+                    <input
+                      type="date"
+                      min={startDate || getTodayString()}
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full p-3 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none bg-card text-ink"
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  size="lg"
+                  onClick={handleRentClick}
+                  disabled={gear.stock <= 0}
+                  className="w-full text-lg h-14"
+                >
+                  {gear.stock > 0 ? 'Rent Now' : 'Currently Unavailable'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

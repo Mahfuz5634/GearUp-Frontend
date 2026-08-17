@@ -88,16 +88,16 @@ export default function CheckoutPage() {
   if (!gear) return <div className="text-center mt-20 text-red-500">Gear not found!</div>;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-          <div className="p-8 border-b border-zinc-100">
-            <h1 className="text-2xl font-bold text-zinc-900">Review & Confirm Rental</h1>
+        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+          <div className="p-8 border-b border-line">
+            <h1 className="font-display text-2xl text-ink tracking-tight">Review & Confirm Rental</h1>
           </div>
           
           <div className="p-8 flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/3">
-              <div className="relative w-full aspect-square bg-zinc-100 rounded-lg overflow-hidden">
+              <div className="relative w-full aspect-square bg-line/60 rounded-lg overflow-hidden">
                 <Image 
                   src={`https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=600&auto=format&fit=crop`} 
                   alt={gear.name}
@@ -108,13 +108,13 @@ export default function CheckoutPage() {
             </div>
             
             <div className="w-full md:w-2/3">
-              <h3 className="font-bold text-xl text-zinc-900 mb-1">{gear.name}</h3>
-              <p className="text-zinc-500 mb-4">by {gear.brand}</p>
+              <h3 className="font-bold text-xl text-ink mb-1">{gear.name}</h3>
+              <p className="text-ink-soft mb-4">by {gear.brand}</p>
               
-              <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 mb-6">
+              <div className="bg-paper p-4 rounded-xl border border-line mb-6">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-zinc-600">Price per day</span>
-                  <span className="font-bold text-zinc-900">${gear.price}</span>
+                  <span className="text-ink-soft">Price per day</span>
+                  <span className="font-bold text-ink">${gear.price}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-green-700 mt-2">
                   <ShieldCheck size={16} /> Covered by GearUp Guarantee
@@ -124,39 +124,39 @@ export default function CheckoutPage() {
               <form onSubmit={handleCheckout} className="flex flex-col gap-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2 flex items-center gap-2">
+                    <label className="block text-sm font-medium text-ink mb-2 flex items-center gap-2">
                       <Calendar size={16} /> Start Date
                     </label>
                     <input 
                       type="date" 
                       required 
                       min={today}
-                      className="w-full border border-zinc-300 p-3 rounded-lg focus:ring-2 focus:ring-zinc-900 outline-none"
+                      className="w-full border border-line p-3 rounded-lg focus:ring-2 focus:ring-trail outline-none"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2 flex items-center gap-2">
+                    <label className="block text-sm font-medium text-ink mb-2 flex items-center gap-2">
                       <Calendar size={16} /> End Date
                     </label>
                     <input 
                       type="date" 
                       required 
                       min={startDate || today}
-                      className="w-full border border-zinc-300 p-3 rounded-lg focus:ring-2 focus:ring-zinc-900 outline-none"
+                      className="w-full border border-line p-3 rounded-lg focus:ring-2 focus:ring-trail outline-none"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-200 pt-6 flex justify-between items-end">
+                <div className="border-t border-line pt-6 flex justify-between items-end">
                   <div>
-                    <span className="text-zinc-500 font-medium block mb-1">Estimated Total</span>
-                    <span className="text-sm text-zinc-400">Excludes taxes & fees</span>
+                    <span className="text-ink-soft font-medium block mb-1">Estimated Total</span>
+                    <span className="text-sm text-ink-soft">Excludes taxes & fees</span>
                   </div>
-                  <span className="text-3xl font-bold text-zinc-900">
+                  <span className="text-3xl font-bold text-ink">
                     ${totalPrice > 0 ? totalPrice : '0.00'}
                   </span>
                 </div>
@@ -169,7 +169,7 @@ export default function CheckoutPage() {
                 >
                   Confirm & Pay
                 </Button>
-                <p className="text-xs text-zinc-500 text-center">
+                <p className="text-xs text-ink-soft text-center">
                   By confirming, you agree to GearUp&apos;s Rental Terms of Service.
                 </p>
               </form>

@@ -9,7 +9,7 @@ import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Package, Plus, Edit, Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import { CategoryIcon } from '@/components/ui/CategoryIcon';
 
 export default function ProviderGearPage() {
   const { data: gears, isLoading } = useQuery({
@@ -20,25 +20,25 @@ export default function ProviderGearPage() {
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">My Gear</h1>
-            <p className="text-zinc-500">Manage your listed items and inventory.</p>
+            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">My Gear</h1>
+            <p className="text-ink-soft">Manage your listed items and inventory.</p>
           </div>
           <Link href="/dashboard/provider/gear/new">
             <Button leftIcon={<Plus size={18} />}>Add New Gear</Button>
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
           {gears && gears.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-zinc-50 text-zinc-500 text-xs uppercase tracking-wider font-semibold border-b border-zinc-200">
+                  <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
                     <th className="p-6">Item</th>
                     <th className="p-6">Category</th>
                     <th className="p-6">Price / Day</th>
@@ -46,29 +46,24 @@ export default function ProviderGearPage() {
                     <th className="p-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-line">
                   {gears.map((gear: any) => (
-                    <tr key={gear.id} className="hover:bg-zinc-50 transition-colors">
+                    <tr key={gear.id} className="hover:bg-line/50 transition-colors">
                       <td className="p-6">
                         <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 rounded-lg bg-zinc-100 overflow-hidden">
-                            <Image 
-                              src={`https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=200&auto=format&fit=crop`}
-                              alt={gear.name}
-                              fill
-                              className="object-cover"
-                            />
+                          <div className="w-12 h-12 rounded-xl bg-ink text-trail flex items-center justify-center shrink-0">
+                            <CategoryIcon name={gear.category?.name} size={22} />
                           </div>
                           <div>
-                            <p className="font-bold text-zinc-900">{gear.name}</p>
-                            <p className="text-sm text-zinc-500">{gear.brand}</p>
+                            <p className="font-bold text-ink">{gear.name}</p>
+                            <p className="text-sm text-ink-soft">{gear.brand}</p>
                           </div>
                         </div>
                       </td>
                       <td className="p-6">
                         <Badge variant="info">{gear.category?.name || 'Uncategorized'}</Badge>
                       </td>
-                      <td className="p-6 font-semibold text-zinc-900">
+                      <td className="p-6 font-semibold text-ink">
                         ${gear.price}
                       </td>
                       <td className="p-6">
@@ -80,7 +75,7 @@ export default function ProviderGearPage() {
                       </td>
                       <td className="p-6 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                          <Button variant="ghost" size="sm" className="text-trail-dark hover:text-trail">
                             <Edit size={16} />
                           </Button>
                           <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
@@ -95,11 +90,11 @@ export default function ProviderGearPage() {
             </div>
           ) : (
             <div className="p-16 text-center flex flex-col items-center">
-              <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-6">
+              <div className="w-20 h-20 bg-line/60 rounded-full flex items-center justify-center text-ink-soft mb-6">
                 <Package size={32} />
               </div>
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">No Gear Listed</h3>
-              <p className="text-zinc-500 mb-8 max-w-md">
+              <h3 className="text-xl font-bold text-ink mb-2">No Gear Listed</h3>
+              <p className="text-ink-soft mb-8 max-w-md">
                 You haven't added any gear to the platform yet. Add your first item to start earning.
               </p>
               <Link href="/dashboard/provider/gear/new">

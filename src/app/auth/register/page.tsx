@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import { registerUser } from '@/services/auth.service';
 import Link from 'next/link';
 import { AxiosError } from 'axios';
+import { Button } from '@/components/ui/Button';
+import { Compass } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,23 +34,31 @@ export default function RegisterPage() {
     registerMutation.mutate(formData);
   };
 
+  const inputClass = "w-full p-3 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-trail bg-paper text-ink placeholder:text-ink-soft/60";
+
   return (
-    <div className="flex justify-center items-center min-h-[80vh]">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 border">
-        <h2 className="text-2xl font-bold text-center mb-6">Join GearUp</h2>
+    <div className="flex justify-center items-center min-h-[80vh] bg-paper px-4 py-12">
+      <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-sm border border-line">
+        <div className="mb-8 text-center">
+          <div className="mx-auto w-12 h-12 rounded-xl bg-ink text-trail flex items-center justify-center mb-4">
+            <Compass size={24} />
+          </div>
+          <h2 className="font-display text-2xl text-ink tracking-tight">Join GearUp</h2>
+          <p className="text-ink-soft text-sm mt-1">Start renting or list your gear</p>
+        </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
             placeholder="Full Name"
             required
-            className="border p-2 rounded-md focus:outline-orange-500"
+            className={inputClass}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
           <input
             type="email"
             placeholder="Email Address"
             required
-            className="border p-2 rounded-md focus:outline-orange-500"
+            className={inputClass}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
           <input
@@ -56,27 +66,24 @@ export default function RegisterPage() {
             placeholder="Password (Min 6 chars)"
             required
             minLength={6}
-            className="border p-2 rounded-md focus:outline-orange-500"
+            className={inputClass}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
           <select
-            className="border p-2 rounded-md focus:outline-orange-500 bg-white"
+            className={inputClass}
             value={formData.role}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
           >
             <option value="CUSTOMER">I want to rent gear (Customer)</option>
             <option value="PROVIDER">I want to list gear (Provider)</option>
           </select>
-          <button
-            type="submit"
-            disabled={registerMutation.isPending}
-            className="bg-orange-600 text-white p-2 rounded-md hover:bg-orange-700 disabled:bg-gray-400"
-          >
-            {registerMutation.isPending ? 'Registering...' : 'Register'}
-          </button>
+          <Button type="submit" size="lg" className="w-full" isLoading={registerMutation.isPending}>
+            Register
+          </Button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Already have an account? <Link href="/auth/login" className="text-orange-600 font-semibold">Login</Link>
+        <p className="mt-6 text-center text-sm text-ink-soft">
+          Already have an account?{' '}
+          <Link href="/auth/login" className="text-trail-dark font-semibold hover:underline">Login</Link>
         </p>
       </div>
     </div>

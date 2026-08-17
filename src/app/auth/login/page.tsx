@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -9,6 +8,8 @@ import { loginUser } from '@/services/auth.service';
 import Link from 'next/link';
 import { useAuth } from '@/providers/AuthProvider';
 import { AxiosError } from 'axios';
+import { Button } from '@/components/ui/Button';
+import { Compass } from 'lucide-react';
 
 interface ErrorResponse {
   message: string;
@@ -40,35 +41,40 @@ export default function LoginPage() {
     loginMutation.mutate(formData);
   };
 
+  const inputClass = "w-full p-3 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-trail bg-paper text-ink placeholder:text-ink-soft/60";
+
   return (
-    <div className="flex justify-center items-center min-h-[80vh]">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 border">
-        <h2 className="text-2xl font-bold text-center mb-6">Login to GearUp</h2>
+    <div className="flex justify-center items-center min-h-[80vh] bg-paper px-4 py-12">
+      <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-sm border border-line">
+        <div className="mb-8 text-center">
+          <div className="mx-auto w-12 h-12 rounded-xl bg-ink text-trail flex items-center justify-center mb-4">
+            <Compass size={24} />
+          </div>
+          <h2 className="font-display text-2xl text-ink tracking-tight">Welcome back</h2>
+          <p className="text-ink-soft text-sm mt-1">Login to rent gear instantly</p>
+        </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="email"
             placeholder="Email Address"
             required
-            className="border p-2 rounded-md focus:outline-orange-500"
+            className={inputClass}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
           <input
             type="password"
             placeholder="Password"
             required
-            className="border p-2 rounded-md focus:outline-orange-500"
+            className={inputClass}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
-          <button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="bg-orange-600 text-white p-2 rounded-md hover:bg-orange-700 disabled:bg-gray-400"
-          >
-            {loginMutation.isPending ? 'Logging in...' : 'Login'}
-          </button>
+          <Button type="submit" size="lg" className="w-full" isLoading={loginMutation.isPending}>
+            Login
+          </Button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Don&apos;t have an account? <Link href="/auth/register" className="text-orange-600 font-semibold">Register</Link>
+        <p className="mt-6 text-center text-sm text-ink-soft">
+          Don&apos;t have an account?{' '}
+          <Link href="/auth/register" className="text-trail-dark font-semibold hover:underline">Register</Link>
         </p>
       </div>
     </div>

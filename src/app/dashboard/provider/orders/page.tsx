@@ -39,7 +39,7 @@ export default function ProviderOrdersPage() {
       case 'CONFIRMED': return <Badge variant="info">AWAITING PAYMENT</Badge>;
       case 'PAID': return <Badge variant="success">PAID (READY)</Badge>;
       case 'PICKED_UP': return <Badge variant="default" className="bg-purple-100 text-purple-800">IN USE</Badge>;
-      case 'RETURNED': return <Badge variant="default" className="bg-zinc-200 text-zinc-800">COMPLETED</Badge>;
+      case 'RETURNED': return <Badge variant="default" className="bg-line text-ink-soft">COMPLETED</Badge>;
       case 'CANCELLED': return <Badge variant="danger">CANCELLED</Badge>;
       default: return <Badge variant="default">{status}</Badge>;
     }
@@ -54,20 +54,20 @@ export default function ProviderOrdersPage() {
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
+    <div className="bg-paper min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">Order Management</h1>
-          <p className="text-zinc-500">View and update customer rental requests.</p>
+          <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Order Management</h1>
+          <p className="text-ink-soft">View and update customer rental requests.</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
           {orders && orders.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[900px]">
                 <thead>
-                  <tr className="bg-zinc-50 text-zinc-500 text-xs uppercase tracking-wider font-semibold border-b border-zinc-200">
+                  <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
                     <th className="p-6">Order Details</th>
                     <th className="p-6">Customer</th>
                     <th className="p-6">Rental Period</th>
@@ -75,29 +75,29 @@ export default function ProviderOrdersPage() {
                     <th className="p-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-line">
                   {orders.map((order: any) => (
-                    <tr key={order.id} className="hover:bg-zinc-50 transition-colors">
+                    <tr key={order.id} className="hover:bg-line/50 transition-colors">
                       <td className="p-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded bg-zinc-100 flex items-center justify-center text-zinc-400">
+                          <div className="w-10 h-10 rounded bg-line/60 flex items-center justify-center text-ink-soft">
                             <ShoppingCart size={18} />
                           </div>
                           <div>
-                            <p className="font-bold text-zinc-900">{order.gear?.name}</p>
-                            <p className="text-xs text-zinc-500">ID: {order.id.slice(-6).toUpperCase()}</p>
+                            <p className="font-bold text-ink">{order.gear?.name}</p>
+                            <p className="text-xs text-ink-soft">ID: {order.id.slice(-6).toUpperCase()}</p>
                           </div>
                         </div>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2">
-                          <User size={16} className="text-zinc-400" />
-                          <span className="text-sm font-medium text-zinc-900">{order.customer?.name}</span>
+                          <User size={16} className="text-ink-soft" />
+                          <span className="text-sm font-medium text-ink">{order.customer?.name}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <div className="flex items-center gap-2 text-sm text-zinc-600">
-                          <Calendar size={16} className="text-zinc-400" />
+                        <div className="flex items-center gap-2 text-sm text-ink-soft">
+                          <Calendar size={16} className="text-ink-soft" />
                           {formatDate(order.startDate)} - {formatDate(order.endDate)}
                         </div>
                       </td>
@@ -146,7 +146,7 @@ export default function ProviderOrdersPage() {
                             </Button>
                           )}
                           {order.status === 'RETURNED' && (
-                            <span className="text-sm text-zinc-400 italic">Order Complete</span>
+                            <span className="text-sm text-ink-soft italic">Order Complete</span>
                           )}
                         </div>
                       </td>
@@ -157,11 +157,11 @@ export default function ProviderOrdersPage() {
             </div>
           ) : (
             <div className="p-16 text-center flex flex-col items-center">
-              <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-6">
+              <div className="w-20 h-20 bg-line/60 rounded-full flex items-center justify-center text-ink-soft mb-6">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">No Orders Yet</h3>
-              <p className="text-zinc-500 max-w-md">
+              <h3 className="text-xl font-bold text-ink mb-2">No Orders Yet</h3>
+              <p className="text-ink-soft max-w-md">
                 You haven't received any rental requests. Make sure your gear is priced competitively and has good descriptions.
               </p>
             </div>

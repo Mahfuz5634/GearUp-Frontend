@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
+import { Compass, User } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 export default function Navbar() {
   const router = useRouter();
@@ -14,41 +16,42 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-slate-900 text-white p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-orange-500">
-          GearUp 🏋️
+    <nav className="sticky top-0 z-50 glass">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+        <Link href="/" className="flex items-center gap-2 group">
+          <span className="w-9 h-9 rounded-xl bg-ink text-trail flex items-center justify-center shadow-sm">
+            <Compass className="group-hover:rotate-45 transition-transform duration-500" size={22} />
+          </span>
+          <span className="text-2xl font-black text-ink tracking-tight">GearUp.</span>
         </Link>
 
-        <div className="flex gap-6 items-center">
-          <Link href="/gear" className="hover:text-orange-400 transition">Browse Gear</Link>
-          
+        <div className="flex items-center gap-6">
+          <Link href="/gear" className="text-sm font-semibold text-ink-soft hover:text-ink transition-colors">
+            Browse Gear
+          </Link>
           {user ? (
-            <>
-            
+            <div className="flex items-center gap-4">
               <Link 
                 href={`/dashboard/${user.role.toLowerCase()}`} 
-                className="hover:text-orange-400 transition"
+                className="text-sm font-semibold text-ink-soft hover:text-ink transition-colors flex items-center gap-1"
               >
-                Dashboard
+                <User size={16} /> Dashboard
               </Link>
-              <button 
+              <Button 
                 onClick={handleLogout} 
-                className="bg-red-600 px-4 py-2 rounded-md hover:bg-red-700 transition"
+                variant="outline"
+                size="sm"
               >
                 Logout
-              </button>
-            </>
+              </Button>
+            </div>
           ) : (
-            <>
-              <Link href="/auth/login" className="hover:text-orange-400 transition">Login</Link>
-              <Link 
-                href="/auth/register" 
-                className="bg-orange-600 px-4 py-2 rounded-md hover:bg-orange-700 transition"
-              >
-                Register
+            <div className="flex items-center gap-4">
+              <Link href="/auth/login" className="text-sm font-semibold text-ink-soft hover:text-ink transition-colors">Login</Link>
+              <Link href="/auth/register">
+                <Button size="sm">Register</Button>
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>

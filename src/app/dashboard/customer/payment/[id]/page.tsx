@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
+
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -44,25 +44,25 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12 flex justify-center items-center">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-        <div className="p-8 border-b border-zinc-100 text-center">
-          <div className="mx-auto w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-4 text-zinc-900">
+    <div className="bg-paper min-h-screen py-12 flex justify-center items-center">
+      <div className="w-full max-w-md bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
+        <div className="p-8 border-b border-line text-center">
+          <div className="mx-auto w-16 h-16 bg-line/60 rounded-full flex items-center justify-center mb-4 text-ink">
             <CreditCard size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-zinc-900 mb-2">Secure Payment</h1>
-          <p className="text-zinc-500">Complete your rental order payment via Stripe.</p>
+          <h1 className="font-display text-2xl text-ink tracking-tight mb-2">Secure Payment</h1>
+          <p className="text-ink-soft">Complete your rental order payment via Stripe.</p>
         </div>
         
         <div className="p-8">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-8">
               <Loader size={32} className="mb-4" />
-              <p className="text-zinc-500 font-medium">Initializing secure gateway...</p>
+              <p className="text-ink-soft font-medium">Initializing secure gateway...</p>
             </div>
           ) : checkoutUrl ? (
             <div className="flex flex-col gap-6 text-center">
-              <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 flex items-center justify-center gap-2 text-sm text-green-700">
+              <div className="bg-paper p-4 rounded-xl border border-line flex items-center justify-center gap-2 text-sm text-green-700">
                 <ShieldCheck size={20} /> All transactions are secure and encrypted.
               </div>
               
@@ -76,7 +76,7 @@ export default function PaymentPage() {
                 {isRedirecting ? 'Redirecting to Stripe...' : 'Pay with Stripe'}
               </Button>
               
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-ink-soft">
                 You will be securely redirected to Stripe to complete your payment.
               </p>
             </div>

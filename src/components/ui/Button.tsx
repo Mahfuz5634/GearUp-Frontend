@@ -20,14 +20,14 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-white';
+  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-paper';
   
   const variants = {
-    primary: 'bg-zinc-900 text-white hover:bg-zinc-800',
-    secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
-    outline: 'border border-zinc-200 hover:bg-zinc-100 text-zinc-900',
+    primary: 'bg-trail text-white hover:bg-trail-dark shadow-sm shadow-trail/30',
+    secondary: 'bg-card text-ink border border-line hover:border-trail/40 hover:text-trail-dark',
+    outline: 'border border-ink/15 text-ink hover:bg-card hover:border-trail/40',
     danger: 'bg-red-600 text-white hover:bg-red-700',
-    ghost: 'hover:bg-zinc-100 text-zinc-900 hover:text-zinc-900',
+    ghost: 'hover:bg-line/60 text-ink hover:text-ink',
   };
   
   const sizes = {

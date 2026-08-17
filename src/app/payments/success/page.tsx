@@ -29,19 +29,19 @@ function PaymentSuccessContent() {
   }, [sessionId, router]);
 
   return (
-    <div className="bg-white p-10 rounded-2xl shadow-sm border border-zinc-200 max-w-md w-full text-center">
+    <div className="bg-card p-10 rounded-2xl shadow-sm border border-line max-w-md w-full text-center">
       <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
         <CheckCircle2 size={40} className="text-green-600" />
       </div>
       
-      <h1 className="text-3xl font-extrabold text-zinc-900 mb-2">Payment Successful!</h1>
-      <p className="text-zinc-500 mb-8">
+      <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Payment Successful!</h1>
+      <p className="text-ink-soft mb-8">
         Thank you for your payment. Your rental order is now confirmed and paid.
       </p>
       
-      <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 mb-8">
-        <p className="text-sm text-zinc-600 font-medium mb-1">Redirecting to Dashboard in</p>
-        <p className="text-3xl font-bold text-zinc-900">{countdown}s</p>
+      <div className="bg-paper p-4 rounded-xl border border-line mb-8">
+        <p className="text-sm text-ink-soft font-medium mb-1">Redirecting to Dashboard in</p>
+        <p className="text-3xl font-bold text-ink">{countdown}s</p>
       </div>
 
       <Button 
@@ -58,7 +58,7 @@ function PaymentSuccessContent() {
 
 export default function PaymentSuccessPage() {
   return (
-    <div className="bg-zinc-50 min-h-screen flex items-center justify-center p-4">
+    <div className="bg-paper min-h-screen flex items-center justify-center p-4">
       <Suspense fallback={<div className="p-10 text-center animate-pulse">Loading...</div>}>
         <PaymentSuccessContent />
       </Suspense>
