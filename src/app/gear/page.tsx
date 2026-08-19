@@ -4,23 +4,42 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllGears } from '@/services/gear.service';
-import { Gear } from '@/types';
+import { getAllGears, getCategories } from '@/services/gear.service';
+import { Gear, Category } from '@/types';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
-import { Filter, ArrowRight, MapPin } from 'lucide-react';
+import { Filter, ArrowRight, MapPin, Search } from 'lucide-react';
 
 export default function GearPage() {
   const [filters, setFilters] = useState({
+    search: '',
     category: '',
+    brand: '',
     minPrice: '',
     maxPrice: '',
   });
 
-  const { data: gears, isLoading, isError } = useQuery({
-    queryKey: ['gears', filters],
-    queryFn: () => getAllGears(filters),
+  const { data: gears, isLoading, isError } = useQuery<Gear[]>({
+    queryKey: ['gears', { category: filters.category, minPrice: filters.minPrice, maxPrice: filters.maxPrice }],
+    queryFn: () =>
+      getAllGears({ category: filters.category, minPrice: filters.minPrice, maxPrice: filters.maxPrice }),
+  });
+
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
+
+  const brands: string[] = [
+    ...new Set((gears || []).map((g) => g.brand).filter((b): b is string => !!b)),
+  ].sort();
+
+  const displayedGears = (gears || []).filter((gear) => {
+    const matchesSearch =
+      !filters.search || gear.name.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesBrand = !filters.brand || gear.brand === filters.brand;
+    return matchesSearch && matchesBrand;
   });
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
@@ -29,7 +48,7 @@ export default function GearPage() {
   };
 
   const clearFilters = () => {
-    setFilters({ category: '', minPrice: '', maxPrice: '' });
+    setFilters({ search: '', category: '', brand: '', minPrice: '', maxPrice: '' });
   };
 
   const inputClass = "w-full p-2.5 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none bg-paper text-ink placeholder:text-ink-soft/60";
@@ -60,6 +79,23 @@ export default function GearPage() {
 
             <div className="space-y-6">
               <div>
+                <label className="block text-sm font-medium text-ink mb-2">Search</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-soft">
+                    <Search size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Search gear by name..."
+                    value={filters.search}
+                    onChange={handleFilterChange}
+                    className={`${inputClass} pl-9`}
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-ink mb-2">Category</label>
                 <select
                   name="category"
@@ -68,10 +104,24 @@ export default function GearPage() {
                   className={inputClass}
                 >
                   <option value="">All Categories</option>
-                  <option value="Cycling">Cycling</option>
-                  <option value="Camping">Camping</option>
-                  <option value="Fitness">Fitness</option>
-                  <option value="Water Sports">Water Sports</option>
+                  {categories?.map((cat: Category) => (
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-ink mb-2">Brand</label>
+                <select
+                  name="brand"
+                  value={filters.brand}
+                  onChange={handleFilterChange}
+                  className={inputClass}
+                >
+                  <option value="">All Brands</option>
+                  {brands.map((brand) => (
+                    <option key={brand} value={brand}>{brand}</option>
+                  ))}
                 </select>
               </div>
 
@@ -118,11 +168,11 @@ export default function GearPage() {
           ) : (
             <>
               <div className="mb-6 flex justify-between items-center">
-                <p className="text-ink-soft font-medium">Showing {gears?.length || 0} results</p>
+                <p className="text-ink-soft font-medium">Showing {displayedGears.length || 0} results</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {gears?.map((gear: Gear) => (
+                {displayedGears.map((gear) => (
                   <Link
                     key={gear.id}
                     href={`/gear/${gear.id}`}
@@ -164,7 +214,7 @@ export default function GearPage() {
                 ))}
               </div>
 
-              {gears?.length === 0 && (
+              {displayedGears.length === 0 && (
                 <div className="text-center py-20 bg-card rounded-2xl border border-line">
                   <p className="text-ink-soft mb-4">No gears found matching your criteria.</p>
                   <Button onClick={clearFilters} variant="outline">Clear Filters</Button>

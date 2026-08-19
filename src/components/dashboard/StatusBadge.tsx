@@ -4,16 +4,16 @@ import { Clock, CheckCircle2, CreditCard, PackageCheck, RotateCcw, XCircle, User
 
 interface StatusConfig {
   label: string;
-  variant: 'default' | 'success' | 'warning' | 'danger' | 'info';
+  variant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'blue';
   icon: LucideIcon;
   iconClass: string;
 }
 
 const STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   PLACED: { label: 'New Request', variant: 'warning', icon: Clock, iconClass: 'text-amber-600' },
-  CONFIRMED: { label: 'Awaiting Payment', variant: 'info', icon: CreditCard, iconClass: 'text-trail-dark' },
-  PAID: { label: 'Paid · Ready', variant: 'success', icon: PackageCheck, iconClass: 'text-emerald-600' },
-  PICKED_UP: { label: 'In Use', variant: 'default', icon: User, iconClass: 'text-purple-600' },
+  CONFIRMED: { label: 'Awaiting Payment', variant: 'blue', icon: CreditCard, iconClass: 'text-blue-600' },
+  PAID: { label: 'Paid · Ready', variant: 'purple', icon: PackageCheck, iconClass: 'text-purple-600' },
+  PICKED_UP: { label: 'In Use', variant: 'success', icon: User, iconClass: 'text-emerald-600' },
   RETURNED: { label: 'Completed', variant: 'default', icon: RotateCcw, iconClass: 'text-ink-soft' },
   CANCELLED: { label: 'Cancelled', variant: 'danger', icon: XCircle, iconClass: 'text-red-600' },
 };

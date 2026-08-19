@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Loader } from '@/components/ui/Loader';
 
 export default function EditGearPage() {
@@ -38,6 +39,7 @@ function buildFormData(gear: any): {
   stock: string;
   condition: string;
   features: string;
+  imageUrl: string;
 } {
   return {
     name: gear.name || '',
@@ -49,6 +51,7 @@ function buildFormData(gear: any): {
     stock: gear.stock?.toString() || '',
     condition: gear.condition || 'Excellent',
     features: gear.features?.join(', ') || '',
+    imageUrl: gear.imageUrl || '',
   };
 }
 
@@ -248,6 +251,27 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
             </div>
 
 
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-ink">Image URL (Optional)</label>
+              <input
+                type="url"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/gear-photo.jpg"
+                className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
+              />
+              {formData.imageUrl && (
+                <Image
+                  src={formData.imageUrl}
+                  alt="Gear preview"
+                  width={128}
+                  height={96}
+                  className="w-32 h-24 object-cover rounded-lg border border-line"
+                />
+              )}
+            </div>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-ink">Features (Comma separated)</label>

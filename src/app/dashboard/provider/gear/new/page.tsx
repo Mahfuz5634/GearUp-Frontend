@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AddGearPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function AddGearPage() {
     stock: '',
     condition: 'Excellent',
     features: '',
+    imageUrl: '',
   });
 
   const { data: categories } = useQuery({
@@ -71,7 +73,7 @@ export default function AddGearPage() {
             <ArrowLeft size={16} /> Back to Gear
           </Link>
           <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Add New Gear</h1>
-          <p className="text-ink-soft">List a new item for rent on GearUp. No image upload is required at this time.</p>
+          <p className="text-ink-soft">List a new item for rent on GearUp. Add a photo URL to help your gear stand out.</p>
         </div>
 
         <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden p-8">
@@ -216,6 +218,27 @@ export default function AddGearPage() {
             </div>
 
 
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-ink">Image URL (Optional)</label>
+              <input
+                type="url"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/gear-photo.jpg"
+                className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
+              />
+              {formData.imageUrl && (
+                <Image
+                  src={formData.imageUrl}
+                  alt="Gear preview"
+                  width={128}
+                  height={96}
+                  className="w-32 h-24 object-cover rounded-lg border border-line"
+                />
+              )}
+            </div>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-ink">Features (Comma separated)</label>

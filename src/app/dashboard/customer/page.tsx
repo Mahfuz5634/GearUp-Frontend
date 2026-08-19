@@ -7,14 +7,16 @@ import Link from 'next/link';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { getMyRentals } from '@/services/rental.service';
+import { getMyPayments } from '@/services/payment.service';
 import { createReview } from '@/services/review.service';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import StatCard from '@/components/dashboard/StatCard';
 import SectionCard from '@/components/dashboard/SectionCard';
 import StatusBadge from '@/components/dashboard/StatusBadge';
 import EmptyState from '@/components/dashboard/EmptyState';
 import { SkeletonCards, SkeletonList } from '@/components/dashboard/Skeleton';
-import { Calendar, CreditCard, MessageSquare, Package, Star, X, Compass, CheckCircle2 } from 'lucide-react';
+import { Calendar, CreditCard, MessageSquare, Package, Star, X, Compass, CheckCircle2, ReceiptText } from 'lucide-react';
 
 const STATUS_ORDER: Record<string, number> = {
   PLACED: 0,
@@ -36,6 +38,11 @@ export default function CustomerDashboard() {
   const { data: orders, isLoading } = useQuery({
     queryKey: ['my-rentals'],
     queryFn: getMyRentals,
+  });
+
+  const { data: payments } = useQuery({
+    queryKey: ['my-payments'],
+    queryFn: getMyPayments,
   });
 
   const reviewMutation = useMutation({
@@ -220,6 +227,54 @@ export default function CustomerDashboard() {
           </SectionCard>
         ) : null}
       </div>
+
+      {/* Payment history */}
+      <SectionCard title="Payment History">
+        {payments && payments.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[640px]">
+              <thead>
+                <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
+                  <th className="p-5">Transaction</th>
+                  <th className="p-5">Amount</th>
+                  <th className="p-5">Method</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {payments.map((payment: any) => (
+                  <tr key={payment.id} className="hover:bg-line/40 transition-colors">
+                    <td className="p-5">
+                      <p className="text-xs font-mono text-ink-soft">{payment.transactionId || payment.id}</p>
+                    </td>
+                    <td className="p-5 font-bold text-ink">${payment.amount}</td>
+                    <td className="p-5 text-sm text-ink-soft capitalize">{payment.method || 'Stripe'}</td>
+                    <td className="p-5">
+                      {payment.status === 'COMPLETED' ? (
+                        <Badge variant="success">Completed</Badge>
+                      ) : payment.status === 'PENDING' ? (
+                        <Badge variant="warning">Pending</Badge>
+                      ) : (
+                        <Badge variant="danger">Failed</Badge>
+                      )}
+                    </td>
+                    <td className="p-5 text-sm text-ink-soft">
+                      {payment.paidAt || payment.createdAt ? formatDate(payment.paidAt || payment.createdAt) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState
+            icon={ReceiptText}
+            title="No payments yet"
+            description="Payments you make for rental orders will appear here."
+          />
+        )}
+      </SectionCard>
 
       {/* Review Modal */}
       {reviewModalOpen && (

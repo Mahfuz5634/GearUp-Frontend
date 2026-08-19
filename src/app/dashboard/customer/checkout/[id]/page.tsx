@@ -9,7 +9,7 @@ import { getSingleGear } from '@/services/gear.service';
 import { createRentalOrder } from '@/services/rental.service';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
-import { Calendar, ShieldCheck } from 'lucide-react';
+import { Calendar, ShieldCheck, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 
 export default function CheckoutPage() {
@@ -98,12 +98,18 @@ export default function CheckoutPage() {
           <div className="p-8 flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/3">
               <div className="relative w-full aspect-square bg-line/60 rounded-lg overflow-hidden">
-                <Image 
-                  src={`https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=600&auto=format&fit=crop`} 
-                  alt={gear.name}
-                  fill
-                  className="object-cover"
-                />
+                {gear.imageUrl ? (
+                  <Image
+                    src={gear.imageUrl}
+                    alt={gear.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-ink-soft/40">
+                    <ImageIcon size={48} />
+                  </div>
+                )}
               </div>
             </div>
             
