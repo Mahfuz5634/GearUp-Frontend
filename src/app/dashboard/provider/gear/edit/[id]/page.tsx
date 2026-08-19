@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { updateProviderGear } from '@/services/provider.service';
-import { getSingleGear } from '@/services/gear.service';
+import { getSingleGear, getCategories } from '@/services/gear.service';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -36,7 +36,6 @@ function buildFormData(gear: any): {
   categoryId: string;
   price: string;
   stock: string;
-  imageUrl: string;
   condition: string;
   features: string;
 } {
@@ -48,7 +47,6 @@ function buildFormData(gear: any): {
     categoryId: gear.categoryId || '',
     price: gear.price?.toString() || '',
     stock: gear.stock?.toString() || '',
-    imageUrl: gear.imageUrl || '',
     condition: gear.condition || 'Excellent',
     features: gear.features?.join(', ') || '',
   };
@@ -59,6 +57,11 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState(() => buildFormData(gear));
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
 
   const mutation = useMutation({
     mutationFn: (data: any) => updateProviderGear(gearId, data),
@@ -127,20 +130,23 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-ink">Category ID</label>
+                <label className="text-sm font-semibold text-ink">Category</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-soft">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft">
                     <Tag size={18} />
                   </div>
-                  <input
-                    type="text"
+                  <select
                     name="categoryId"
                     required
                     value={formData.categoryId}
                     onChange={handleChange}
-                    placeholder="Enter category UUID"
-                    className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
-                  />
+                    className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none appearance-none bg-paper"
+                  >
+                    <option value="" disabled>Select a category</option>
+                    {categories?.map((cat: any) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -214,7 +220,7 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
                     required
                     min="1"
                     step="0.01"
-                    value={formData.price}
+                    value={formData.price || ''}
                     onChange={handleChange}
                     placeholder="25.00"
                     className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
@@ -233,7 +239,7 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
                     name="stock"
                     required
                     min="1"
-                    value={formData.stock}
+                    value={formData.stock || ''}
                     onChange={handleChange}
                     placeholder="1"
                     className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
@@ -242,17 +248,7 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-ink">Image URL (Optional)</label>
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
-              />
-            </div>
+
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-ink">Features (Comma separated)</label>

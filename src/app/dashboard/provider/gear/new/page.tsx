@@ -3,8 +3,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createProviderGear } from '@/services/provider.service';
+import { getCategories } from '@/services/gear.service';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -22,9 +23,13 @@ export default function AddGearPage() {
     categoryId: '',
     price: '',
     stock: '',
-    imageUrl: '',
     condition: 'Excellent',
     features: '',
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
   });
 
   const mutation = useMutation({
@@ -95,18 +100,21 @@ export default function AddGearPage() {
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-ink">Category ID</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-soft">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft">
                     <Tag size={18} />
                   </div>
-                  <input
-                    type="text"
+                  <select
                     name="categoryId"
                     required
                     value={formData.categoryId}
                     onChange={handleChange}
-                    placeholder="Enter category UUID"
-                    className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
-                  />
+                    className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none appearance-none bg-paper"
+                  >
+                    <option value="" disabled>Select a category</option>
+                    {categories?.map((cat: any) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -180,7 +188,7 @@ export default function AddGearPage() {
                     required
                     min="1"
                     step="0.01"
-                    value={formData.price}
+                    value={formData.price || ''}
                     onChange={handleChange}
                     placeholder="25.00"
                     className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
@@ -199,7 +207,7 @@ export default function AddGearPage() {
                     name="stock"
                     required
                     min="1"
-                    value={formData.stock}
+                    value={formData.stock || ''}
                     onChange={handleChange}
                     placeholder="1"
                     className="w-full pl-10 pr-4 py-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
@@ -208,17 +216,7 @@ export default function AddGearPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-ink">Image URL (Optional)</label>
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
-              />
-            </div>
+
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-ink">Features (Comma separated)</label>
