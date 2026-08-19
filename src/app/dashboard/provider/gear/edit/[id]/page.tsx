@@ -22,8 +22,8 @@ export default function EditGearPage() {
     enabled: !!gearId,
   });
 
-  if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
-  if (!gear) return <div className="text-center py-32 text-red-500">Gear not found!</div>;
+  if (isLoading) return <div className="flex justify-center py-24"><Loader size={48} /></div>;
+  if (!gear) return <div className="text-center py-24 text-red-500">Gear not found!</div>;
 
   return <EditGearForm gear={gear} gearId={gearId} />;
 }
@@ -96,8 +96,7 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
   };
 
   return (
-    <div className="bg-paper min-h-screen py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl">
         
         <div className="mb-8">
           <Link href="/dashboard/provider/gear" className="text-sm text-ink-soft hover:text-ink flex items-center gap-1 mb-4 w-fit">
@@ -273,7 +272,6 @@ function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
             
           </form>
         </div>
-      </div>
     </div>
   );
 }

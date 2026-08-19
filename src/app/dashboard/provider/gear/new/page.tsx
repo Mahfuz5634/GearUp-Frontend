@@ -64,8 +64,7 @@ export default function AddGearPage() {
   };
 
   return (
-    <div className="bg-paper min-h-screen py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl">
         
         <div className="mb-8">
           <Link href="/dashboard/provider/gear" className="text-sm text-ink-soft hover:text-ink flex items-center gap-1 mb-4 w-fit">
@@ -241,7 +240,6 @@ export default function AddGearPage() {
             
           </form>
         </div>
-      </div>
     </div>
   );
 }

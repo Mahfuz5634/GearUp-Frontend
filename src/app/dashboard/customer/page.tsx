@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
+ 
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -8,10 +8,23 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { getMyRentals } from '@/services/rental.service';
 import { createReview } from '@/services/review.service';
-import { Loader } from '@/components/ui/Loader';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Calendar, CreditCard, MessageSquare, Package, Star, X } from 'lucide-react';
+import StatCard from '@/components/dashboard/StatCard';
+import SectionCard from '@/components/dashboard/SectionCard';
+import StatusBadge from '@/components/dashboard/StatusBadge';
+import EmptyState from '@/components/dashboard/EmptyState';
+import { SkeletonCards, SkeletonList } from '@/components/dashboard/Skeleton';
+import { Calendar, CreditCard, MessageSquare, Package, Star, X, Compass, CheckCircle2 } from 'lucide-react';
+
+const STATUS_ORDER: Record<string, number> = {
+  PLACED: 0,
+  CONFIRMED: 1,
+  PAID: 2,
+  PICKED_UP: 3,
+  RETURNED: 4,
+};
+
+const TIMELINE = ['PLACED', 'CONFIRMED', 'PAID', 'PICKED_UP', 'RETURNED'];
 
 export default function CustomerDashboard() {
   const queryClient = useQueryClient();
@@ -30,14 +43,13 @@ export default function CustomerDashboard() {
     onSuccess: () => {
       toast.success('Review submitted successfully!');
       setReviewModalOpen(false);
-      // reset form
       setRating(5);
       setComment('');
       queryClient.invalidateQueries({ queryKey: ['my-rentals'] });
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to submit review');
-    }
+    },
   });
 
   const openReviewModal = (gearId: string) => {
@@ -45,110 +57,168 @@ export default function CustomerDashboard() {
     setReviewModalOpen(true);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PLACED': return <Badge variant="warning">PLACED</Badge>;
-      case 'CONFIRMED': return <Badge variant="info">CONFIRMED</Badge>;
-      case 'PAID': return <Badge variant="success">PAID</Badge>;
-      case 'PICKED_UP': return <Badge variant="default" className="bg-purple-100 text-purple-800">PICKED UP</Badge>;
-      case 'RETURNED': return <Badge variant="default" className="bg-line text-ink-soft">RETURNED</Badge>;
-      default: return <Badge variant="danger">{status}</Badge>;
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const activeCount = orders?.filter((o: any) => o.status === 'PAID' || o.status === 'PICKED_UP').length || 0;
+  const pendingPayment = orders?.filter((o: any) => o.status === 'CONFIRMED').length || 0;
+  const completedCount = orders?.filter((o: any) => o.status === 'RETURNED').length || 0;
+  const toReview = orders?.filter((o: any) => o.status === 'RETURNED').length || 0;
+
+  const nextPayment = orders?.find((o: any) => o.status === 'CONFIRMED');
+  const latestOrder = [...(orders || [])].sort(
+    (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  ).find((o: any) => o.status !== 'CANCELLED');
+
+  const currentStep = latestOrder ? STATUS_ORDER[latestOrder.status] ?? 0 : 0;
+
+  const renderAction = (order: any) => {
+    if (order.status === 'CONFIRMED') {
+      return (
+        <Link href={`/dashboard/customer/payment/${order.id}`}>
+          <Button size="sm" className="bg-[#635BFF] hover:bg-[#5851df] text-white" leftIcon={<CreditCard size={14} />}>
+            Pay Now
+          </Button>
+        </Link>
+      );
     }
+    if (order.status === 'RETURNED') {
+      return (
+        <Button size="sm" variant="outline" leftIcon={<MessageSquare size={14} />} onClick={() => openReviewModal(order.gearId)}>
+          Review
+        </Button>
+      );
+    }
+    return <span className="text-sm text-ink-soft italic">No action required</span>;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric'
-    });
-  };
-
-  if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <SkeletonCards count={4} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-card rounded-2xl border border-line p-5"><SkeletonList rows={4} /></div>
+          <div className="bg-card rounded-2xl border border-line p-5"><SkeletonList rows={3} /></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-paper min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">My Rentals</h1>
-            <p className="text-ink-soft">Manage your rental requests, payments, and history.</p>
-          </div>
+    <div className="space-y-8">
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard label="Active Rentals" value={activeCount} icon={Package} accent="indigo" />
+        <StatCard
+          label="Awaiting Payment"
+          value={pendingPayment}
+          icon={CreditCard}
+          accent="trail"
+          badge={pendingPayment > 0 ? 'Action needed' : undefined}
+        />
+        <StatCard label="Completed Rentals" value={completedCount} icon={CheckCircle2} accent="green" />
+        <StatCard label="Reviews to Leave" value={toReview} icon={MessageSquare} accent="amber" />
+      </div>
+
+      {/* Quick actions */}
+      <div className="bg-card rounded-2xl shadow-sm border border-line p-5 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+        <div>
+          <h2 className="font-bold text-lg text-ink">Next steps</h2>
+          <p className="text-sm text-ink-soft">
+            {nextPayment
+              ? `You have ${pendingPayment} order${pendingPayment > 1 ? 's' : ''} waiting for payment.`
+              : 'Your rentals are all up to date. Find something new for your next adventure.'}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          {nextPayment && (
+            <Link href={`/dashboard/customer/payment/${nextPayment.id}`}>
+              <Button leftIcon={<CreditCard size={16} />}>Pay Now</Button>
+            </Link>
+          )}
           <Link href="/gear">
-            <Button>Rent More Gear</Button>
+            <Button variant="outline" leftIcon={<Compass size={16} />}>Browse Gear</Button>
           </Link>
         </div>
-        
-        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
-                  <th className="p-6 w-1/3">Gear & Provider</th>
-                  <th className="p-6">Rental Period</th>
-                  <th className="p-6">Status</th>
-                  <th className="p-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {orders?.map((order: any) => (
-                  <tr key={order.id} className="hover:bg-line/50 transition-colors group">
-                    <td className="p-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-line/60 flex items-center justify-center text-ink-soft">
-                          <Package size={24} />
-                        </div>
-                        <div>
-                          <p className="font-bold text-ink group-hover:text-trail-dark transition-colors">
-                            {order.gear?.name}
-                          </p>
-                          <p className="text-xs text-ink-soft mt-1">Provider: {order.gear?.provider?.name || 'Partner'}</p>
-                        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Rental cards */}
+        <SectionCard
+          title="My Rentals"
+          className="lg:col-span-2"
+        >
+          {orders && orders.length > 0 ? (
+            <div className="divide-y divide-line">
+              {orders.map((order: any) => (
+                <div key={order.id} className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-line/40 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-ink text-trail flex items-center justify-center shrink-0">
+                    <Package size={22} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-ink truncate">{order.gear?.name || 'Gear'}</p>
+                    <div className="flex items-center gap-2 text-sm text-ink-soft mt-1">
+                      <Calendar size={14} />
+                      {formatDate(order.startDate)} - {formatDate(order.endDate)}
+                    </div>
+                    <p className="text-xs text-ink-soft mt-1">Provider: {order.gear?.provider?.name || 'Partner'}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <StatusBadge status={order.status} />
+                    {renderAction(order)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Package}
+              title="No rentals yet"
+              description="You haven't placed any rental orders. Browse gear and start your first rental."
+              action={
+                <Link href="/gear">
+                  <Button variant="outline">Browse Gear</Button>
+                </Link>
+              }
+            />
+          )}
+        </SectionCard>
+
+        {/* Timeline */}
+        {latestOrder ? (
+          <SectionCard title="Rental progress">
+            <div className="p-6">
+              <p className="text-sm text-ink-soft mb-6">
+                <span className="font-bold text-ink">{latestOrder.gear?.name || 'Your rental'}</span> is currently{' '}
+                <StatusBadge status={latestOrder.status} />
+              </p>
+              <ol className="space-y-0">
+                {TIMELINE.map((step, i) => {
+                  const done = i <= currentStep;
+                  const isCurrent = i === currentStep && latestOrder.status !== 'RETURNED' && latestOrder.status !== 'CANCELLED';
+                  return (
+                    <li key={step} className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <span
+                          className={`w-4 h-4 rounded-full border-2 mt-0.5 ${done ? 'bg-trail border-trail' : 'border-line bg-card'}`}
+                        />
+                        {i < TIMELINE.length - 1 && (
+                          <span className={`w-0.5 flex-1 my-1 ${i < currentStep ? 'bg-trail' : 'bg-line'}`} />
+                        )}
                       </div>
-                    </td>
-                    <td className="p-6">
-                      <div className="flex items-center gap-2 text-sm text-ink-soft font-medium">
-                        <Calendar size={16} className="text-ink-soft" />
-                        {formatDate(order.startDate)} - {formatDate(order.endDate)}
+                      <div className="pb-6">
+                        <p className={`text-sm font-semibold ${done ? 'text-ink' : 'text-ink-soft/60'}`}>
+                          {isCurrent ? 'Current: ' : ''}
+                          {step.charAt(0) + step.slice(1).toLowerCase().replace('_', ' ')}
+                        </p>
                       </div>
-                    </td>
-                    <td className="p-6">
-                      {getStatusBadge(order.status)}
-                    </td>
-                    <td className="p-6 text-right">
-                      {order.status === 'CONFIRMED' ? (
-                        <Link href={`/dashboard/customer/payment/${order.id}`}>
-                          <Button size="sm" className="bg-[#635BFF] hover:bg-[#5851df] text-white" leftIcon={<CreditCard size={14} />}>
-                            Pay Now
-                          </Button>
-                        </Link>
-                      ) : order.status === 'RETURNED' ? (
-                        <Button size="sm" variant="outline" leftIcon={<MessageSquare size={14} />} onClick={() => openReviewModal(order.gearId)}>
-                          Review
-                        </Button>
-                      ) : (
-                        <span className="text-sm text-ink-soft italic">No action required</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                
-                {(!orders || orders.length === 0) && (
-                  <tr>
-                    <td colSpan={4} className="p-16 text-center">
-                      <div className="mx-auto w-16 h-16 bg-line/60 rounded-full flex items-center justify-center mb-4 text-ink-soft">
-                        <Package size={24} />
-                      </div>
-                      <h3 className="text-lg font-bold text-ink mb-1">No rentals yet</h3>
-                      <p className="text-ink-soft mb-6">You haven't placed any rental orders.</p>
-                      <Link href="/gear">
-                        <Button variant="outline">Browse Gear</Button>
-                      </Link>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </SectionCard>
+        ) : null}
       </div>
 
       {/* Review Modal */}

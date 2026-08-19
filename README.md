@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GearUp Frontend 🏋️
 
-## Getting Started
+**"Rent Sports & Outdoor Gear Instantly"**
 
-First, run the development server:
+GearUp is a modern, responsive frontend application built with Next.js for a sports and outdoor equipment rental service. The platform connects gear owners (providers) with renters (customers) while providing robust administrative controls.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Role-Based Dashboards:** Separate, intuitive dashboards for Customers, Providers, and Admins.
+*   **Customer Experience:** Browse available gear, interactive date-pickers for rentals (with overlap prevention), secure checkout via Stripe, order tracking, and review submission.
+*   **Provider Management:** Easily add new gear (with image URLs), edit existing listings, manage stock, and view incoming rental orders.
+*   **Admin Moderation:** Comprehensive user management with pagination, platform-wide gear monitoring, and rental tracking.
+*   **Modern UI/UX:** Responsive design using Tailwind CSS, loading skeletons, and graceful error boundaries.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Framework:** Next.js (App Router)
+*   **Language:** TypeScript
+*   **Styling:** Tailwind CSS
+*   **State Management / Data Fetching:** `@tanstack/react-query`, Axios
+*   **Payments:** Stripe (`@stripe/react-stripe-js`)
+*   **Icons:** `lucide-react`
+*   **Notifications:** `react-hot-toast`
 
-## Learn More
+## 📦 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
+Make sure you have Node.js installed on your machine. You will also need the backend server running locally.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Clone the repository and navigate to the frontend directory:
+   ```bash
+   cd gearup-frontend
+   ```
 
-## Deploy on Vercel
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Configure Environment Variables:
+   Create a `.env.local` file in the root directory and add the following:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   NEXT_PUBLIC_STRIPES_PUBLIC_KEY=your_stripe_test_public_key
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open your browser and visit:
+   [http://localhost:3000](http://localhost:3000)
+
+## 📁 Folder Structure
+
+*   `/src/app`: Next.js App Router pages (Home, Gear Listings, Dashboards).
+*   `/src/components`: Reusable UI components (Buttons, Loaders, Modals).
+*   `/src/services`: Axios API integration files organized by feature (Auth, Gear, Rental, Payment, Admin, Provider).
+*   `/src/lib`: Core configurations like the global Axios instance setup.
+*   `/src/types`: Global TypeScript interfaces.

@@ -51,6 +51,17 @@ function PaymentSuccessContent() {
       <p className="text-ink-soft mb-8">
         Thank you for your payment. Your rental order is now confirmed and paid.
       </p>
+
+      {!isConfirmed && (
+        <p className="text-sm text-amber-600 font-medium mb-6 animate-pulse">
+          Verifying payment with Stripe...
+        </p>
+      )}
+      {isConfirmed && (
+        <p className="text-sm text-green-600 font-semibold mb-6">
+          Payment verified successfully.
+        </p>
+      )}
       
       <div className="bg-paper p-4 rounded-xl border border-line mb-8">
         <p className="text-sm text-ink-soft font-medium mb-1">Redirecting to Dashboard in</p>

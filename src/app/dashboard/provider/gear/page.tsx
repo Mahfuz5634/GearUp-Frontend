@@ -1,15 +1,15 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unescaped-entities */
+ 
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { getProviderGear, deleteProviderGear } from '@/services/provider.service';
-import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Package, Plus, Edit, Trash2 } from 'lucide-react';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
+import EmptyState from '@/components/dashboard/EmptyState';
+import { SkeletonCards } from '@/components/dashboard/Skeleton';
+import { Plus, Edit, Trash2, Package, DollarSign, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ProviderGearPage() {
@@ -27,109 +27,94 @@ export default function ProviderGearPage() {
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to delete gear');
-    }
+    },
   });
 
-  if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
+  if (isLoading) return <SkeletonCards count={6} />;
 
   return (
-    <div className="bg-paper min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="font-display text-3xl text-ink tracking-tight mb-2">My Gear</h1>
-            <p className="text-ink-soft">Manage your listed items and inventory.</p>
-          </div>
-          <Link href="/dashboard/provider/gear/new">
-            <Button leftIcon={<Plus size={18} />}>Add New Gear</Button>
-          </Link>
-        </div>
-
-        <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden">
-          {gears && gears.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-paper text-ink-soft text-xs uppercase tracking-wider font-semibold border-b border-line">
-                    <th className="p-6">Item</th>
-                    <th className="p-6">Category</th>
-                    <th className="p-6">Price / Day</th>
-                    <th className="p-6">Stock</th>
-                    <th className="p-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {gears.map((gear: any) => (
-                    <tr key={gear.id} className="hover:bg-line/50 transition-colors">
-                      <td className="p-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-ink text-trail flex items-center justify-center shrink-0">
-                            <CategoryIcon name={gear.category?.name} size={22} />
-                          </div>
-                          <div>
-                            <p className="font-bold text-ink">{gear.name}</p>
-                            <p className="text-sm text-ink-soft">{gear.brand}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <Badge variant="info">{gear.category?.name || 'Uncategorized'}</Badge>
-                      </td>
-                      <td className="p-6 font-semibold text-ink">
-                        ${gear.price}
-                      </td>
-                      <td className="p-6">
-                        {gear.stock > 0 ? (
-                          <Badge variant="success">{gear.stock} left</Badge>
-                        ) : (
-                          <Badge variant="danger">Out of stock</Badge>
-                        )}
-                      </td>
-                      <td className="p-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link href={`/dashboard/provider/gear/edit/${gear.id}`}>
-                            <Button variant="ghost" size="sm" className="text-trail-dark hover:text-trail">
-                              <Edit size={16} />
-                            </Button>
-                          </Link>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-red-600 hover:text-red-700"
-                            onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this gear?')) {
-                                deleteMutation.mutate(gear.id);
-                              }
-                            }}
-                            isLoading={deleteMutation.isPending && deleteMutation.variables === gear.id}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="p-16 text-center flex flex-col items-center">
-              <div className="w-20 h-20 bg-line/60 rounded-full flex items-center justify-center text-ink-soft mb-6">
-                <Package size={32} />
+    <div>
+      {gears && gears.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {gears.map((gear: any) => (
+            <div
+              key={gear.id}
+              className="group bg-card rounded-2xl shadow-sm border border-line overflow-hidden flex flex-col hover:border-trail/40 hover:shadow-md transition-all"
+            >
+              {/* Art block */}
+              <div className="relative h-36 bg-gradient-to-br from-ink via-ink to-ink-soft flex items-center justify-center">
+                <CategoryIcon name={gear.category?.name} size={56} className="text-trail/90" />
+                <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-xs font-semibold bg-white/90 text-ink px-2 py-1 rounded-full">
+                  <Tag size={11} /> {gear.category?.name || 'Uncategorized'}
+                </span>
+                {gear.stock === 0 && (
+                  <span className="absolute top-3 right-3 text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-full">
+                    Out of stock
+                  </span>
+                )}
               </div>
-              <h3 className="text-xl font-bold text-ink mb-2">No Gear Listed</h3>
-              <p className="text-ink-soft mb-8 max-w-md">
-                You haven't added any gear to the platform yet. Add your first item to start earning.
-              </p>
+
+              {/* Body */}
+              <div className="p-5 flex flex-col flex-1">
+                <h3 className="font-bold text-ink leading-snug group-hover:text-trail-dark transition-colors line-clamp-1">
+                  {gear.name}
+                </h3>
+                <p className="text-sm text-ink-soft">{gear.brand}</p>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1 text-lg font-bold text-ink">
+                    <DollarSign size={16} className="text-trail" />
+                    {gear.price}
+                    <span className="text-xs font-medium text-ink-soft">/day</span>
+                  </span>
+                  {gear.stock > 0 && (
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                      gear.stock <= 2 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+                    }`}>
+                      {gear.stock} left
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-line flex items-center gap-2">
+                  <Link href={`/dashboard/provider/gear/edit/${gear.id}`} className="flex-1">
+                    <Button variant="secondary" size="sm" className="w-full" leftIcon={<Edit size={14} />}>
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to delete this gear?')) {
+                        deleteMutation.mutate(gear.id);
+                      }
+                    }}
+                    isLoading={deleteMutation.isPending && deleteMutation.variables === gear.id}
+                    aria-label={`Delete ${gear.name}`}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-card rounded-2xl shadow-sm border border-line">
+          <EmptyState
+            icon={Package}
+            title="No Gear Listed"
+            description="You haven't added any gear to the platform yet. Add your first item to start earning."
+            action={
               <Link href="/dashboard/provider/gear/new">
                 <Button size="lg" leftIcon={<Plus size={18} />}>List Your First Item</Button>
               </Link>
-            </div>
-          )}
+            }
+          />
         </div>
-
-      </div>
+      )}
     </div>
   );
 }
