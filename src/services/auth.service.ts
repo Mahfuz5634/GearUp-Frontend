@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { User, LoginResponse, RegisterResponse } from "@/types";
 
 export const registerUser = async (userData: Record<string, unknown>): Promise<RegisterResponse> => {
-    const {data} = await axiosInstance.post('auth/register',userData);
+    const {data} = await axiosInstance.post('/auth/register',userData);
     return data;
 }
 

@@ -5,15 +5,28 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
+import { confirmPayment } from '@/services/payment.service';
+
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState(5);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
     if (!sessionId) return;
     
+    const verify = async () => {
+      try {
+        await confirmPayment(sessionId);
+        setIsConfirmed(true);
+      } catch (err) {
+        console.error('Failed to confirm payment on client:', err);
+      }
+    };
+    verify();
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {

@@ -9,6 +9,6 @@ export const createRentalOrder = async (payload: { gearId: string; startDate: st
 
 
 export const getMyRentals = async () => {
-  const { data } = await axiosInstance.get('/rentals/customer');
+  const { data } = await axiosInstance.get('/rentals');
   return data.data;
 };
