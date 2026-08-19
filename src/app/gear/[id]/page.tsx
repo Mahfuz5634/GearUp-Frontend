@@ -10,8 +10,10 @@ import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
-import { Calendar, ShieldCheck, Truck, ArrowLeft } from 'lucide-react';
+import { Calendar, ShieldCheck, Truck, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { RentalOrder } from '@/types';
 
 export default function GearDetailsPage() {
   const params = useParams();
@@ -48,6 +50,25 @@ export default function GearDetailsPage() {
     if (new Date(startDate) > new Date(endDate)) {
       toast.error('End date cannot be before start date.');
       return;
+    }
+
+    // Check for overlapping dates
+    if (gear.rentals && gear.rentals.length > 0) {
+      const isOverlapping = gear.rentals.some((rental: RentalOrder) => {
+        if (rental.status === 'CANCELLED' || rental.status === 'RETURNED') return false;
+        const rStart = new Date(rental.startDate);
+        const rEnd = new Date(rental.endDate);
+        const sDate = new Date(startDate);
+        const eDate = new Date(endDate);
+        
+        // sDate is between rStart and rEnd OR eDate is between rStart and rEnd OR rental is completely within selected dates
+        return (sDate <= rEnd && eDate >= rStart);
+      });
+
+      if (isOverlapping) {
+        toast.error('Gear is already booked for the selected dates.');
+        return;
+      }
     }
 
     sessionStorage.setItem(`rental_dates_${gearId}`, JSON.stringify({ startDate, endDate }));
@@ -98,6 +119,22 @@ export default function GearDetailsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 p-8 lg:p-12">
             {/* Description */}
             <div className="lg:col-span-3">
+              <div className="relative w-full h-[400px] bg-line/30 rounded-2xl overflow-hidden mb-8">
+                {gear.imageUrl ? (
+                  <Image 
+                    src={gear.imageUrl} 
+                    alt={gear.name} 
+                    fill 
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-ink-soft/40 gap-4">
+                    <ImageIcon size={64} />
+                    <p>No image available</p>
+                  </div>
+                )}
+              </div>
+              <h2 className="text-xl font-bold text-ink mb-4">Description</h2>
               <p className="text-ink-soft leading-relaxed mb-8">{gear.description}</p>
 
               <div className="grid grid-cols-2 gap-4 py-6 border-y border-line mb-8">

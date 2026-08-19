@@ -2,19 +2,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { getProviderGear } from '@/services/provider.service';
+import { getProviderGear, deleteProviderGear } from '@/services/provider.service';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Package, Plus, Edit, Trash2 } from 'lucide-react';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
+import toast from 'react-hot-toast';
 
 export default function ProviderGearPage() {
+  const queryClient = useQueryClient();
   const { data: gears, isLoading } = useQuery({
     queryKey: ['provider-gear'],
     queryFn: getProviderGear,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProviderGear(id),
+    onSuccess: () => {
+      toast.success('Gear deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['provider-gear'] });
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to delete gear');
+    }
   });
 
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
@@ -75,10 +88,22 @@ export default function ProviderGearPage() {
                       </td>
                       <td className="p-6 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" className="text-trail-dark hover:text-trail">
-                            <Edit size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                          <Link href={`/dashboard/provider/gear/edit/${gear.id}`}>
+                            <Button variant="ghost" size="sm" className="text-trail-dark hover:text-trail">
+                              <Edit size={16} />
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-600 hover:text-red-700"
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to delete this gear?')) {
+                                deleteMutation.mutate(gear.id);
+                              }
+                            }}
+                            isLoading={deleteMutation.isPending && deleteMutation.variables === gear.id}
+                          >
                             <Trash2 size={16} />
                           </Button>
                         </div>

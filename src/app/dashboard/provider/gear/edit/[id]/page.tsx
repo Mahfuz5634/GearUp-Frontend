@@ -2,40 +2,74 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createProviderGear } from '@/services/provider.service';
+import { useRouter, useParams } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { updateProviderGear } from '@/services/provider.service';
+import { getSingleGear } from '@/services/gear.service';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { Loader } from '@/components/ui/Loader';
 
-export default function AddGearPage() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    brand: '',
-    model: '',
-    categoryId: '',
-    price: '',
-    stock: '',
-    imageUrl: '',
-    condition: 'Excellent',
-    features: '',
+export default function EditGearPage() {
+  const params = useParams();
+  const gearId = params.id as string;
+
+  const { data: gear, isLoading } = useQuery({
+    queryKey: ['gear', gearId],
+    queryFn: () => getSingleGear(gearId),
+    enabled: !!gearId,
   });
 
+  if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
+  if (!gear) return <div className="text-center py-32 text-red-500">Gear not found!</div>;
+
+  return <EditGearForm gear={gear} gearId={gearId} />;
+}
+
+function buildFormData(gear: any): {
+  name: string;
+  description: string;
+  brand: string;
+  model: string;
+  categoryId: string;
+  price: string;
+  stock: string;
+  imageUrl: string;
+  condition: string;
+  features: string;
+} {
+  return {
+    name: gear.name || '',
+    description: gear.description || '',
+    brand: gear.brand || '',
+    model: gear.model || '',
+    categoryId: gear.categoryId || '',
+    price: gear.price?.toString() || '',
+    stock: gear.stock?.toString() || '',
+    imageUrl: gear.imageUrl || '',
+    condition: gear.condition || 'Excellent',
+    features: gear.features?.join(', ') || '',
+  };
+}
+
+function EditGearForm({ gear, gearId }: { gear: any; gearId: string }) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const [formData, setFormData] = useState(() => buildFormData(gear));
+
   const mutation = useMutation({
-    mutationFn: (data: any) => createProviderGear(data),
+    mutationFn: (data: any) => updateProviderGear(gearId, data),
     onSuccess: () => {
-      toast.success('Gear added successfully!');
+      toast.success('Gear updated successfully!');
       queryClient.invalidateQueries({ queryKey: ['provider-gear'] });
+      queryClient.invalidateQueries({ queryKey: ['gear', gearId] });
       router.push('/dashboard/provider/gear');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to add gear');
+      toast.error(err?.response?.data?.message || 'Failed to update gear');
     }
   });
 
@@ -66,8 +100,8 @@ export default function AddGearPage() {
           <Link href="/dashboard/provider/gear" className="text-sm text-ink-soft hover:text-ink flex items-center gap-1 mb-4 w-fit">
             <ArrowLeft size={16} /> Back to Gear
           </Link>
-          <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Add New Gear</h1>
-          <p className="text-ink-soft">List a new item for rent on GearUp. No image upload is required at this time.</p>
+          <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Edit Gear</h1>
+          <p className="text-ink-soft">Update your listed item for rent on GearUp.</p>
         </div>
 
         <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden p-8">
@@ -237,7 +271,7 @@ export default function AddGearPage() {
                 <Button variant="outline" type="button" className="h-12">Cancel</Button>
               </Link>
               <Button type="submit" className="h-12 w-48" isLoading={mutation.isPending}>
-                List Gear
+                Update Gear
               </Button>
             </div>
             

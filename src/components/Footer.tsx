@@ -41,9 +41,9 @@ export default function Footer() {
             <h3 className="text-white font-bold mb-4">Company</h3>
             <ul className="space-y-3 text-sm">
               <li><Link href="/about" className="hover:text-trail transition-colors">About Us</Link></li>
-              <li><a href="#" className="hover:text-trail transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-trail transition-colors">Trust & Safety</a></li>
-              <li><a href="#" className="hover:text-trail transition-colors">Terms of Service</a></li>
+              <li><Link href="/careers" className="hover:text-trail transition-colors">Careers</Link></li>
+              <li><Link href="/trust-safety" className="hover:text-trail transition-colors">Trust & Safety</Link></li>
+              <li><Link href="/terms" className="hover:text-trail transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 
@@ -63,7 +63,7 @@ export default function Footer() {
           <p>&copy; {new Date().getFullYear()} GearUp Inc. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-trail transition-colors">Privacy</a>
-            <a href="#" className="hover:text-trail transition-colors">Terms</a>
+            <Link href="/terms" className="hover:text-trail transition-colors">Terms</Link>
             <a href="#" className="hover:text-trail transition-colors">Sitemap</a>
           </div>
         </div>

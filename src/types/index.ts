@@ -24,6 +24,7 @@ export interface Gear {
   price: number;
   brand: string;
   stock: number;
+  imageUrl?: string;
   categoryId: string;
   category?: Category;
   providerId: string;

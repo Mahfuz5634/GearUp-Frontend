@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getAllGears } from '@/services/gear.service';
 import { Gear } from '@/types';
 import { Loader } from '@/components/ui/Loader';
@@ -127,17 +128,25 @@ export default function GearPage() {
                     href={`/gear/${gear.id}`}
                     className="group relative block rounded-2xl bg-card border border-line overflow-hidden hover:shadow-xl hover:shadow-ink/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                   >
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-trail scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300" />
-                    <div className="p-6 flex flex-col flex-grow">
-                      <div className="flex items-center justify-between mb-5">
-                        <div className="w-11 h-11 rounded-xl bg-ink text-trail flex items-center justify-center group-hover:rotate-6 transition-transform duration-300">
-                          <CategoryIcon name={gear.category?.name} size={22} />
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-trail scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 z-10" />
+                    <div className="relative h-48 w-full bg-line/30 overflow-hidden">
+                      {gear.imageUrl ? (
+                        <Image 
+                          src={gear.imageUrl} 
+                          alt={gear.name} 
+                          fill 
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-ink-soft/40">
+                          <CategoryIcon name={gear.category?.name} size={48} />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-ink-soft">
-                          {gear.category?.name || 'General'}
-                        </span>
+                      )}
+                      <div className="absolute top-3 right-3 bg-paper/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-ink-soft shadow-sm">
+                        {gear.category?.name || 'General'}
                       </div>
-
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
                       <h3 className="font-display text-lg text-ink line-clamp-1 mb-1 group-hover:text-trail-dark transition-colors">{gear.name}</h3>
                       <p className="text-sm text-ink-soft mb-5">{gear.category?.name || 'Uncategorized'} • {gear.brand}</p>
 

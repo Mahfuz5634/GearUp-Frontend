@@ -13,6 +13,8 @@ import { useState } from 'react';
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users'],
@@ -45,6 +47,9 @@ export default function AdminUsersPage() {
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const totalPages = filteredUsers ? Math.ceil(filteredUsers.length / itemsPerPage) : 0;
+  const paginatedUsers = filteredUsers?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   if (isLoading) return <div className="flex justify-center py-32"><Loader size={48} /></div>;
 
   return (
@@ -66,7 +71,7 @@ export default function AdminUsersPage() {
               placeholder="Search users..."
               className="w-full pl-10 pr-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none text-sm"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
         </div>
@@ -84,7 +89,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {filteredUsers?.map((user: any) => (
+                {paginatedUsers?.map((user: any) => (
                   <tr key={user.id} className="hover:bg-line/50 transition-colors">
                     <td className="p-6">
                       <div className="flex items-center gap-3">
@@ -143,6 +148,47 @@ export default function AdminUsersPage() {
               </tbody>
             </table>
           </div>
+          
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-line flex items-center justify-between">
+              <p className="text-sm text-ink-soft">
+                Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredUsers?.length || 0)}</span> of <span className="font-medium">{filteredUsers?.length}</span> results
+              </p>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
+                        currentPage === i + 1 
+                          ? 'bg-trail text-white' 
+                          : 'text-ink-soft hover:bg-line/50 hover:text-ink'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
           
           {filteredUsers?.length === 0 && (
             <div className="p-16 text-center flex flex-col items-center">

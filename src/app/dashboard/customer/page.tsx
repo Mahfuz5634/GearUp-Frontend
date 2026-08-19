@@ -2,19 +2,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { getMyRentals } from '@/services/rental.service';
+import { createReview } from '@/services/review.service';
 import { Loader } from '@/components/ui/Loader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Calendar, CreditCard, MessageSquare, Package } from 'lucide-react';
+import { Calendar, CreditCard, MessageSquare, Package, Star, X } from 'lucide-react';
 
 export default function CustomerDashboard() {
+  const queryClient = useQueryClient();
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedGearId, setSelectedGearId] = useState('');
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+
   const { data: orders, isLoading } = useQuery({
     queryKey: ['my-rentals'],
     queryFn: getMyRentals,
   });
+
+  const reviewMutation = useMutation({
+    mutationFn: () => createReview({ gearId: selectedGearId, rating, comment }),
+    onSuccess: () => {
+      toast.success('Review submitted successfully!');
+      setReviewModalOpen(false);
+      // reset form
+      setRating(5);
+      setComment('');
+      queryClient.invalidateQueries({ queryKey: ['my-rentals'] });
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to submit review');
+    }
+  });
+
+  const openReviewModal = (gearId: string) => {
+    setSelectedGearId(gearId);
+    setReviewModalOpen(true);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -92,7 +121,7 @@ export default function CustomerDashboard() {
                           </Button>
                         </Link>
                       ) : order.status === 'RETURNED' ? (
-                        <Button size="sm" variant="outline" leftIcon={<MessageSquare size={14} />}>
+                        <Button size="sm" variant="outline" leftIcon={<MessageSquare size={14} />} onClick={() => openReviewModal(order.gearId)}>
                           Review
                         </Button>
                       ) : (
@@ -121,6 +150,53 @@ export default function CustomerDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Review Modal */}
+      {reviewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm px-4">
+          <div className="bg-paper w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-line">
+            <div className="px-6 py-4 border-b border-line flex justify-between items-center">
+              <h3 className="font-display text-xl text-ink">Write a Review</h3>
+              <button onClick={() => setReviewModalOpen(false)} className="text-ink-soft hover:text-ink">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-ink mb-2">Rating</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`transition-colors ${star <= rating ? 'text-yellow-400' : 'text-line'}`}
+                    >
+                      <Star size={28} fill={star <= rating ? 'currentColor' : 'none'} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-ink mb-2">Comment</label>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
+                  rows={4}
+                  placeholder="Share your experience with this gear..."
+                  required
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-card border-t border-line flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setReviewModalOpen(false)}>Cancel</Button>
+              <Button onClick={() => reviewMutation.mutate()} isLoading={reviewMutation.isPending}>
+                Submit Review
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

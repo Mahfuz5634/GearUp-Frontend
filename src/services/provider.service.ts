@@ -11,6 +11,16 @@ export const createProviderGear = async (payload: any) => {
   return data.data;
 };
 
+export const updateProviderGear = async (id: string, payload: any) => {
+  const { data } = await axiosInstance.put(`/provider/gear/${id}`, payload);
+  return data.data;
+};
+
+export const deleteProviderGear = async (id: string) => {
+  const { data } = await axiosInstance.delete(`/provider/gear/${id}`);
+  return data.data;
+};
+
 export const getProviderOrders = async () => {
   const { data } = await axiosInstance.get('/provider/orders');
   return data.data;

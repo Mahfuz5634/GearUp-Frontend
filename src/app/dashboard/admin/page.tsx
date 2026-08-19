@@ -171,8 +171,10 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <h4 className="font-bold text-ink text-sm">Pending Moderation</h4>
-                  <p className="text-sm text-ink-soft">3 gear items flagged for review.</p>
-                  <Button variant="outline" size="sm" className="mt-2">Review Items</Button>
+                  <p className="text-sm text-ink-soft">Inspect all gear listings and rentals.</p>
+                  <Link href="/dashboard/admin/moderation">
+                    <Button variant="outline" size="sm" className="mt-2">Review Items</Button>
+                  </Link>
                 </div>
               </div>
             </div>
