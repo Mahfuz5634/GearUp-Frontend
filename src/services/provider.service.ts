@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from '@/lib/axiosInstance';
 
 export const getProviderGear = async () => {
@@ -6,12 +5,12 @@ export const getProviderGear = async () => {
   return data.data;
 };
 
-export const createProviderGear = async (payload: any) => {
+export const createProviderGear = async (payload: FormData) => {
   const { data } = await axiosInstance.post('/provider/gear', payload);
   return data.data;
 };
 
-export const updateProviderGear = async (id: string, payload: any) => {
+export const updateProviderGear = async (id: string, payload: FormData) => {
   const { data } = await axiosInstance.put(`/provider/gear/${id}`, payload);
   return data.data;
 };

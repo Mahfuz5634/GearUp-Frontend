@@ -10,10 +10,33 @@ import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
-import { Calendar, ShieldCheck, Truck, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { Calendar, ShieldCheck, Truck, ArrowLeft, Image as ImageIcon, Star, Check } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { RentalOrder } from '@/types';
+import { RentalOrder, Review } from '@/types';
+
+function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          className={star <= rating ? 'fill-amber-400 text-amber-400' : 'fill-line text-line'}
+        />
+      ))}
+    </div>
+  );
+}
+
+function formatDate(date?: string) {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
 export default function GearDetailsPage() {
   const params = useParams();
@@ -137,6 +160,51 @@ export default function GearDetailsPage() {
               <h2 className="text-xl font-bold text-ink mb-4">Description</h2>
               <p className="text-ink-soft leading-relaxed mb-8">{gear.description}</p>
 
+              {/* Specifications */}
+              <section className="mb-8">
+                <h2 className="text-xl font-bold text-ink mb-4">Specifications</h2>
+                <div className="bg-paper rounded-2xl border border-line overflow-hidden">
+                  <dl className="divide-y divide-line">
+                    <div className="flex items-center justify-between px-5 py-3">
+                      <dt className="text-sm font-medium text-ink-soft">Brand</dt>
+                      <dd className="text-sm font-semibold text-ink">{gear.brand}</dd>
+                    </div>
+                    {gear.model && (
+                      <div className="flex items-center justify-between px-5 py-3">
+                        <dt className="text-sm font-medium text-ink-soft">Model</dt>
+                        <dd className="text-sm font-semibold text-ink">{gear.model}</dd>
+                      </div>
+                    )}
+                    {gear.condition && (
+                      <div className="flex items-center justify-between px-5 py-3">
+                        <dt className="text-sm font-medium text-ink-soft">Condition</dt>
+                        <dd className="text-sm font-semibold text-ink">{gear.condition}</dd>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between px-5 py-3">
+                      <dt className="text-sm font-medium text-ink-soft">Category</dt>
+                      <dd className="text-sm font-semibold text-ink">{gear.category?.name || 'General'}</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                {gear.features && gear.features.length > 0 && (
+                  <div className="mt-5">
+                    <h3 className="text-sm font-bold text-ink uppercase tracking-wider mb-3">Features</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {gear.features.map((feature: string) => (
+                        <span
+                          key={feature}
+                          className="inline-flex items-center gap-1.5 bg-trail/10 text-trail-dark text-xs font-semibold px-3 py-1.5 rounded-full"
+                        >
+                          <Check size={12} /> {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </section>
+
               <div className="grid grid-cols-2 gap-4 py-6 border-y border-line mb-8">
                 <div className="flex items-center gap-3">
                   <span className="w-10 h-10 rounded-xl bg-line/60 text-moss flex items-center justify-center">
@@ -157,6 +225,52 @@ export default function GearDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Reviews */}
+              <section id="reviews" className="mb-8">
+                <h2 className="text-xl font-bold text-ink mb-4">Reviews</h2>
+                {gear.reviews && gear.reviews.length > 0 ? (
+                  <>
+                    <div className="flex items-center gap-4 mb-6 p-5 bg-paper rounded-2xl border border-line">
+                      <div className="text-center">
+                        <p className="font-display text-4xl text-ink leading-none mb-1">
+                          {(gear.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / gear.reviews.length).toFixed(1)}
+                        </p>
+                        <StarRating rating={Math.round(gear.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / gear.reviews.length)} />
+                      </div>
+                      <div className="border-l border-line pl-4">
+                        <p className="text-sm font-semibold text-ink">{gear.reviews.length} review{gear.reviews.length !== 1 ? 's' : ''}</p>
+                        <p className="text-xs text-ink-soft">from verified renters</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      {gear.reviews.map((review: Review) => (
+                        <div key={review.id} className="bg-paper rounded-2xl border border-line p-5">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <div className="flex items-center gap-3">
+                              <span className="w-9 h-9 rounded-full bg-trail/10 text-trail-dark flex items-center justify-center text-sm font-bold shrink-0">
+                                {review.customer?.name?.charAt(0).toUpperCase() || 'U'}
+                              </span>
+                              <div>
+                                <p className="text-sm font-semibold text-ink">{review.customer?.name || 'Anonymous'}</p>
+                                <p className="text-xs text-ink-soft">{formatDate(review.createdAt)}</p>
+                              </div>
+                            </div>
+                            <StarRating rating={review.rating} />
+                          </div>
+                          <p className="text-sm text-ink-soft leading-relaxed">{review.comment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="bg-paper rounded-2xl border border-dashed border-line p-8 text-center">
+                    <Star size={28} className="mx-auto text-line mb-3" />
+                    <p className="text-sm font-medium text-ink mb-1">No reviews yet</p>
+                    <p className="text-xs text-ink-soft">Be the first to rent this gear and share your experience.</p>
+                  </div>
+                )}
+              </section>
             </div>
 
             {/* Rental Form */}

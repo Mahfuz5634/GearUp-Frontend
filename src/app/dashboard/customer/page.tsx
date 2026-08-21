@@ -53,6 +53,7 @@ export default function CustomerDashboard() {
       setRating(5);
       setComment('');
       queryClient.invalidateQueries({ queryKey: ['my-rentals'] });
+      queryClient.invalidateQueries({ queryKey: ['gear', selectedGearId] });
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to submit review');

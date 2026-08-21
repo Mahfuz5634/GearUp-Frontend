@@ -9,7 +9,7 @@ import { Gear, Category } from '@/types';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
-import { Filter, ArrowRight, MapPin, Search } from 'lucide-react';
+import { Filter, ArrowRight, MapPin, Search, Calendar } from 'lucide-react';
 
 export default function GearPage() {
   const [filters, setFilters] = useState({
@@ -18,12 +18,31 @@ export default function GearPage() {
     brand: '',
     minPrice: '',
     maxPrice: '',
+    startDate: '',
+    endDate: '',
   });
 
+  const availabilityActive =
+    !!filters.startDate && !!filters.endDate && filters.startDate <= filters.endDate;
+
   const { data: gears, isLoading, isError } = useQuery<Gear[]>({
-    queryKey: ['gears', { category: filters.category, minPrice: filters.minPrice, maxPrice: filters.maxPrice }],
+    queryKey: [
+      'gears',
+      {
+        category: filters.category,
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        startDate: availabilityActive ? filters.startDate : '',
+        endDate: availabilityActive ? filters.endDate : '',
+      },
+    ],
     queryFn: () =>
-      getAllGears({ category: filters.category, minPrice: filters.minPrice, maxPrice: filters.maxPrice }),
+      getAllGears({
+        category: filters.category,
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        ...(availabilityActive ? { startDate: filters.startDate, endDate: filters.endDate } : {}),
+      }),
   });
 
   const { data: categories } = useQuery<Category[]>({
@@ -48,7 +67,7 @@ export default function GearPage() {
   };
 
   const clearFilters = () => {
-    setFilters({ search: '', category: '', brand: '', minPrice: '', maxPrice: '' });
+    setFilters({ search: '', category: '', brand: '', minPrice: '', maxPrice: '', startDate: '', endDate: '' });
   };
 
   const inputClass = "w-full p-2.5 border border-line rounded-lg focus:ring-2 focus:ring-trail outline-none bg-paper text-ink placeholder:text-ink-soft/60";
@@ -148,6 +167,38 @@ export default function GearPage() {
                 </div>
               </div>
 
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-medium text-ink mb-2">
+                  <Calendar size={14} className="text-trail-dark" /> Available Dates
+                </label>
+                <div className="space-y-2">
+                  <input
+                    type="date"
+                    name="startDate"
+                    min={new Date().toISOString().split('T')[0]}
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                    className={inputClass}
+                  />
+                  <input
+                    type="date"
+                    name="endDate"
+                    min={filters.startDate || new Date().toISOString().split('T')[0]}
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                    className={inputClass}
+                  />
+                  {filters.startDate && filters.endDate && filters.startDate > filters.endDate && (
+                    <p className="text-xs text-red-500">End date must be after start date.</p>
+                  )}
+                  {availabilityActive && (
+                    <p className="text-xs text-moss font-medium">
+                      Showing gear available for your selected dates.
+                    </p>
+                  )}
+                </div>
+              </div>
+
               <Button onClick={clearFilters} variant="outline" className="w-full">
                 Clear Filters
               </Button>
@@ -194,6 +245,16 @@ export default function GearPage() {
                       )}
                       <div className="absolute top-3 right-3 bg-paper/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-ink-soft shadow-sm">
                         {gear.category?.name || 'General'}
+                      </div>
+                      <div
+                        className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${
+                          gear.stock > 0
+                            ? 'bg-emerald-500/90 text-white'
+                            : 'bg-red-500/90 text-white'
+                        }`}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                        {gear.stock > 0 ? `In Stock (${gear.stock})` : 'Out of Stock'}
                       </div>
                     </div>
                     <div className="p-6 flex flex-col flex-grow">

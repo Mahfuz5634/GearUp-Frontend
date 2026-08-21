@@ -24,11 +24,16 @@ export interface Gear {
   price: number;
   brand: string;
   stock: number;
+  model?: string | null;
+  condition?: string | null;
+  features?: string[];
   imageUrl?: string;
   categoryId: string;
   category?: Category;
   providerId: string;
   provider?: User;
+  reviews?: Review[];
+  rentals?: RentalOrder[];
   isDeleted: boolean;
   createdAt?: string;
   updatedAt?: string;

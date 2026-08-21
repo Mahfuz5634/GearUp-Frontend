@@ -7,15 +7,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createProviderGear } from '@/services/provider.service';
 import { getCategories } from '@/services/gear.service';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Package, DollarSign, Tag, Archive } from 'lucide-react';
+import { ArrowLeft, Package, DollarSign, Tag, Archive, ImagePlus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function AddGearPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -26,8 +25,9 @@ export default function AddGearPage() {
     stock: '',
     condition: 'Excellent',
     features: '',
-    imageUrl: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const { data: categories } = useQuery({
     queryKey: ['categories'],
@@ -35,7 +35,7 @@ export default function AddGearPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: any) => createProviderGear(data),
+    mutationFn: (data: FormData) => createProviderGear(data),
     onSuccess: () => {
       toast.success('Gear added successfully!');
       queryClient.invalidateQueries({ queryKey: ['provider-gear'] });
@@ -51,17 +51,45 @@ export default function AddGearPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be smaller than 5MB');
+      return;
+    }
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setPreviewUrl('');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Formatting data for the API
-    const payload = {
-      ...formData,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock, 10),
-      features: formData.features.split(',').map(f => f.trim()).filter(f => f),
-    };
-    
+    const payload = new FormData();
+    payload.append('name', formData.name);
+    payload.append('description', formData.description);
+    payload.append('brand', formData.brand);
+    payload.append('model', formData.model);
+    payload.append('categoryId', formData.categoryId);
+    payload.append('price', formData.price);
+    payload.append('stock', formData.stock);
+    payload.append('condition', formData.condition);
+    payload.append(
+      'features',
+      formData.features.split(',').map(f => f.trim()).filter(Boolean).join(',')
+    );
+    if (imageFile) payload.append('image', imageFile);
+
     mutation.mutate(payload);
   };
 
@@ -73,7 +101,7 @@ export default function AddGearPage() {
             <ArrowLeft size={16} /> Back to Gear
           </Link>
           <h1 className="font-display text-3xl text-ink tracking-tight mb-2">Add New Gear</h1>
-          <p className="text-ink-soft">List a new item for rent on GearUp. Add a photo URL to help your gear stand out.</p>
+          <p className="text-ink-soft">List a new item for rent on GearUp. Upload a photo to help your gear stand out.</p>
         </div>
 
         <div className="bg-card rounded-2xl shadow-sm border border-line overflow-hidden p-8">
@@ -220,23 +248,40 @@ export default function AddGearPage() {
 
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-ink">Image URL (Optional)</label>
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                placeholder="https://example.com/gear-photo.jpg"
-                className="w-full p-3 border border-line rounded-xl focus:ring-2 focus:ring-trail outline-none"
-              />
-              {formData.imageUrl && (
-                <Image
-                  src={formData.imageUrl}
-                  alt="Gear preview"
-                  width={128}
-                  height={96}
-                  className="w-32 h-24 object-cover rounded-lg border border-line"
-                />
+              <label className="text-sm font-semibold text-ink">Gear Photo (Optional)</label>
+              {previewUrl ? (
+                <div className="relative w-fit">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt="Gear preview"
+                    className="w-48 h-36 object-cover rounded-xl border border-line"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                    aria-label="Remove image"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="gear-image"
+                  className="flex flex-col items-center justify-center gap-2 w-full p-8 border-2 border-dashed border-line rounded-xl cursor-pointer hover:border-trail hover:bg-trail/5 transition-colors"
+                >
+                  <ImagePlus size={28} className="text-ink-soft" />
+                  <span className="text-sm font-medium text-ink">Click to upload a photo</span>
+                  <span className="text-xs text-ink-soft">JPEG, PNG, WEBP or GIF — max 5MB</span>
+                  <input
+                    id="gear-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
               )}
             </div>
 
